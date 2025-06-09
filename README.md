@@ -1,7 +1,7 @@
 AdaWriter v1.4.3
 A distraction-free, e-ink writing device powered by a Raspberry Pi. AdaWriter is designed for writers who want a simple, focused tool that feels like a classic typewriter but with the conveniences of modern technology. It uses a low-power e-ink screen and a physical keyboard to create a dedicated writing environment.
 
-(A photo of your finished device would look great here!)
+
 Table of Contents
  * Overview
  * Features
