@@ -1,0 +1,10 @@
+# Python package dependencies for the AdaWriter project.
+# Install using: pip install -r requirements.txt
+
+pygame      # Used for main application loop and event handling
+evdev       # For low-level keyboard input reading
+netifaces   # To get network interface IP addresses
+Pillow      # Python Imaging Library, for drawing to the display
+Flask       # Powers the web server for file downloads
+
+# Note: The 'waveshare-epd' library is a hardware driver and must be installed separately from source.

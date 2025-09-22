@@ -1,0 +1,530 @@
+2025-09-15 12:01:31,109 - INFO - Found keyboard at /dev/input/by-id/usb-Telink_Macally_RFKeyboard-if01-event-kbd
+2025-09-15 12:01:31,110 - INFO - Keyboard grabbed: Telink Macally RFKeyboard
+2025-09-15 12:01:31,111 - INFO - Initializing AdaWriter application...
+2025-09-15 12:01:31,112 - INFO - E-ink display object created.
+2025-09-15 12:01:31,112 - INFO - Initializing and clearing display...
+2025-09-15 12:01:31,316 - DEBUG - e-Paper busy
+2025-09-15 12:01:31,317 - DEBUG - e-Paper busy release
+2025-09-15 12:01:31,318 - DEBUG - e-Paper busy
+2025-09-15 12:01:31,339 - DEBUG - e-Paper busy release
+2025-09-15 12:01:31,341 - DEBUG - e-Paper busy
+2025-09-15 12:01:31,342 - DEBUG - e-Paper busy release
+2025-09-15 12:01:31,405 - DEBUG - e-Paper busy
+2025-09-15 12:01:34,263 - DEBUG - e-Paper busy release
+2025-09-15 12:01:34,264 - INFO - Display initialized.
+2025-09-15 12:01:34,330 - DEBUG - STREAM b'IHDR' 16 13
+2025-09-15 12:01:34,331 - DEBUG - STREAM b'sBIT' 41 3
+2025-09-15 12:01:34,331 - DEBUG - b'sBIT' 41 3 (unknown)
+2025-09-15 12:01:34,332 - DEBUG - STREAM b'PLTE' 56 6
+2025-09-15 12:01:34,332 - DEBUG - STREAM b'IDAT' 74 1881
+2025-09-15 12:01:34,336 - INFO - First run detected. Creating default files.
+2025-09-15 12:01:34,338 - INFO - Default files and initialization flag created.
+2025-09-15 12:01:34,338 - INFO - last_wifi.conf not found. Will prompt for new connection.
+2025-09-15 12:01:34,367 - DEBUG - Horizontal
+2025-09-15 12:01:34,536 - DEBUG - e-Paper busy
+2025-09-15 12:01:37,393 - DEBUG - e-Paper busy release
+2025-09-15 12:01:38,266 - DEBUG - Horizontal
+2025-09-15 12:01:38,455 - DEBUG - e-Paper busy
+2025-09-15 12:01:41,312 - DEBUG - e-Paper busy release
+2025-09-15 12:01:42,021 - DEBUG - Horizontal
+2025-09-15 12:01:42,183 - DEBUG - e-Paper busy
+2025-09-15 12:01:45,042 - DEBUG - e-Paper busy release
+2025-09-15 12:01:45,103 - DEBUG - Horizontal
+2025-09-15 12:01:45,291 - DEBUG - e-Paper busy
+2025-09-15 12:01:47,544 - DEBUG - e-Paper busy release
+2025-09-15 12:01:47,577 - DEBUG - Horizontal
+2025-09-15 12:01:47,740 - DEBUG - e-Paper busy
+2025-09-15 12:01:49,992 - DEBUG - e-Paper busy release
+2025-09-15 12:01:51,975 - DEBUG - Horizontal
+2025-09-15 12:01:52,162 - DEBUG - e-Paper busy
+2025-09-15 12:01:54,415 - DEBUG - e-Paper busy release
+2025-09-15 12:01:54,448 - DEBUG - Horizontal
+2025-09-15 12:01:54,613 - DEBUG - e-Paper busy
+2025-09-15 12:01:56,865 - DEBUG - e-Paper busy release
+2025-09-15 12:01:56,901 - DEBUG - Horizontal
+2025-09-15 12:01:57,070 - DEBUG - e-Paper busy
+2025-09-15 12:01:59,328 - DEBUG - e-Paper busy release
+2025-09-15 12:01:59,386 - DEBUG - Horizontal
+2025-09-15 12:01:59,568 - DEBUG - e-Paper busy
+2025-09-15 12:02:01,821 - DEBUG - e-Paper busy release
+2025-09-15 12:02:01,828 - DEBUG - Horizontal
+2025-09-15 12:02:01,982 - DEBUG - e-Paper busy
+2025-09-15 12:02:04,235 - DEBUG - e-Paper busy release
+2025-09-15 12:02:05,237 - INFO - Updated monthly journal 2025-09.txt
+2025-09-15 12:02:05,277 - DEBUG - Horizontal
+2025-09-15 12:02:05,476 - DEBUG - e-Paper busy
+2025-09-15 12:02:07,729 - DEBUG - e-Paper busy release
+2025-09-15 12:02:07,757 - DEBUG - Horizontal
+2025-09-15 12:02:07,917 - DEBUG - e-Paper busy
+2025-09-15 12:02:10,171 - DEBUG - e-Paper busy release
+2025-09-15 12:02:11,526 - DEBUG - Horizontal
+2025-09-15 12:02:11,711 - DEBUG - e-Paper busy
+2025-09-15 12:02:13,963 - DEBUG - e-Paper busy release
+2025-09-15 12:02:56,028 - DEBUG - Horizontal
+2025-09-15 12:02:56,211 - DEBUG - e-Paper busy
+2025-09-15 12:02:59,068 - DEBUG - e-Paper busy release
+2025-09-15 12:02:59,095 - DEBUG - Horizontal
+2025-09-15 12:02:59,258 - DEBUG - e-Paper busy
+2025-09-15 12:03:01,512 - DEBUG - e-Paper busy release
+2025-09-15 12:03:01,557 - DEBUG - Horizontal
+2025-09-15 12:03:01,730 - DEBUG - e-Paper busy
+2025-09-15 12:03:03,983 - DEBUG - e-Paper busy release
+2025-09-15 12:03:04,010 - DEBUG - Horizontal
+2025-09-15 12:03:04,171 - DEBUG - e-Paper busy
+2025-09-15 12:03:06,424 - DEBUG - e-Paper busy release
+2025-09-15 12:03:39,005 - DEBUG - Horizontal
+2025-09-15 12:03:39,179 - DEBUG - e-Paper busy
+2025-09-15 12:03:42,036 - DEBUG - e-Paper busy release
+2025-09-15 12:03:44,070 - DEBUG - Horizontal
+2025-09-15 12:03:44,262 - DEBUG - e-Paper busy
+2025-09-15 12:03:46,515 - DEBUG - e-Paper busy release
+2025-09-15 12:03:54,001 - DEBUG - Horizontal
+2025-09-15 12:03:54,187 - DEBUG - e-Paper busy
+2025-09-15 12:03:57,043 - DEBUG - e-Paper busy release
+2025-09-15 12:03:57,073 - DEBUG - Horizontal
+2025-09-15 12:03:57,236 - DEBUG - e-Paper busy
+2025-09-15 12:03:59,490 - DEBUG - e-Paper busy release
+2025-09-15 12:04:01,824 - DEBUG - Horizontal
+2025-09-15 12:04:02,011 - DEBUG - e-Paper busy
+2025-09-15 12:04:04,264 - DEBUG - e-Paper busy release
+2025-09-15 12:04:06,289 - DEBUG - Horizontal
+2025-09-15 12:04:06,449 - DEBUG - e-Paper busy
+2025-09-15 12:04:08,705 - DEBUG - e-Paper busy release
+2025-09-15 12:04:10,893 - DEBUG - Horizontal
+2025-09-15 12:04:11,062 - DEBUG - e-Paper busy
+2025-09-15 12:04:13,315 - DEBUG - e-Paper busy release
+2025-09-15 12:04:40,429 - DEBUG - Horizontal
+2025-09-15 12:04:40,614 - DEBUG - e-Paper busy
+2025-09-15 12:04:42,867 - DEBUG - e-Paper busy release
+2025-09-15 12:04:42,890 - DEBUG - Horizontal
+2025-09-15 12:04:43,052 - DEBUG - e-Paper busy
+2025-09-15 12:04:45,305 - DEBUG - e-Paper busy release
+2025-09-15 12:04:45,318 - DEBUG - Horizontal
+2025-09-15 12:04:45,474 - DEBUG - e-Paper busy
+2025-09-15 12:04:47,731 - DEBUG - e-Paper busy release
+2025-09-15 12:04:49,778 - DEBUG - Horizontal
+2025-09-15 12:04:49,965 - DEBUG - e-Paper busy
+2025-09-15 12:04:52,218 - DEBUG - e-Paper busy release
+2025-09-15 12:04:58,782 - DEBUG - Horizontal
+2025-09-15 12:04:58,972 - DEBUG - e-Paper busy
+2025-09-15 12:05:01,225 - DEBUG - e-Paper busy release
+2025-09-15 12:05:02,000 - DEBUG - Horizontal
+2025-09-15 12:05:02,165 - DEBUG - e-Paper busy
+2025-09-15 12:05:04,419 - DEBUG - e-Paper busy release
+2025-09-15 12:05:06,733 - DEBUG - Horizontal
+2025-09-15 12:05:06,890 - DEBUG - e-Paper busy
+2025-09-15 12:05:09,143 - DEBUG - e-Paper busy release
+2025-09-15 12:05:12,187 - DEBUG - Horizontal
+2025-09-15 12:05:12,359 - DEBUG - e-Paper busy
+2025-09-15 12:05:14,611 - DEBUG - e-Paper busy release
+2025-09-15 12:05:20,288 - DEBUG - Horizontal
+2025-09-15 12:05:20,458 - DEBUG - e-Paper busy
+2025-09-15 12:05:22,712 - DEBUG - e-Paper busy release
+2025-09-15 12:05:27,996 - DEBUG - Horizontal
+2025-09-15 12:05:28,160 - DEBUG - e-Paper busy
+2025-09-15 12:05:30,413 - DEBUG - e-Paper busy release
+2025-09-15 12:05:33,192 - DEBUG - Horizontal
+2025-09-15 12:05:33,374 - DEBUG - e-Paper busy
+2025-09-15 12:05:35,626 - DEBUG - e-Paper busy release
+2025-09-15 12:05:43,484 - DEBUG - Horizontal
+2025-09-15 12:05:43,673 - DEBUG - e-Paper busy
+2025-09-15 12:05:45,926 - DEBUG - e-Paper busy release
+2025-09-15 12:05:45,954 - DEBUG - Horizontal
+2025-09-15 12:05:46,117 - DEBUG - e-Paper busy
+2025-09-15 12:05:48,370 - DEBUG - e-Paper busy release
+2025-09-15 12:05:48,400 - DEBUG - Horizontal
+2025-09-15 12:05:48,563 - DEBUG - e-Paper busy
+2025-09-15 12:05:50,820 - DEBUG - e-Paper busy release
+2025-09-15 12:05:50,871 - DEBUG - Horizontal
+2025-09-15 12:05:51,038 - DEBUG - e-Paper busy
+2025-09-15 12:05:53,290 - DEBUG - e-Paper busy release
+2025-09-15 12:05:55,288 - DEBUG - Horizontal
+2025-09-15 12:05:55,446 - DEBUG - e-Paper busy
+2025-09-15 12:05:57,702 - DEBUG - e-Paper busy release
+2025-09-15 12:06:02,147 - DEBUG - Horizontal
+2025-09-15 12:06:02,309 - DEBUG - e-Paper busy
+2025-09-15 12:06:04,565 - DEBUG - e-Paper busy release
+2025-09-15 12:06:07,611 - DEBUG - Horizontal
+2025-09-15 12:06:07,799 - DEBUG - e-Paper busy
+2025-09-15 12:06:10,052 - DEBUG - e-Paper busy release
+2025-09-15 12:06:27,843 - DEBUG - Horizontal
+2025-09-15 12:06:28,000 - DEBUG - e-Paper busy
+2025-09-15 12:06:30,253 - DEBUG - e-Paper busy release
+2025-09-15 12:06:35,097 - DEBUG - Horizontal
+2025-09-15 12:06:35,265 - DEBUG - e-Paper busy
+2025-09-15 12:06:37,517 - DEBUG - e-Paper busy release
+2025-09-15 12:06:39,544 - DEBUG - Horizontal
+2025-09-15 12:06:39,715 - DEBUG - e-Paper busy
+2025-09-15 12:06:41,972 - DEBUG - e-Paper busy release
+2025-09-15 12:16:28,524 - DEBUG - Horizontal
+2025-09-15 12:16:28,711 - DEBUG - e-Paper busy
+2025-09-15 12:16:31,565 - DEBUG - e-Paper busy release
+2025-09-15 12:16:31,592 - DEBUG - Horizontal
+2025-09-15 12:16:31,757 - DEBUG - e-Paper busy
+2025-09-15 12:16:34,010 - DEBUG - e-Paper busy release
+2025-09-15 12:16:34,054 - DEBUG - Horizontal
+2025-09-15 12:16:34,226 - DEBUG - e-Paper busy
+2025-09-15 12:16:36,478 - DEBUG - e-Paper busy release
+2025-09-15 12:16:36,504 - DEBUG - Horizontal
+2025-09-15 12:16:36,670 - DEBUG - e-Paper busy
+2025-09-15 12:16:38,921 - DEBUG - e-Paper busy release
+2025-09-15 12:16:38,950 - DEBUG - Horizontal
+2025-09-15 12:16:39,154 - DEBUG - e-Paper busy
+2025-09-15 12:16:41,410 - DEBUG - e-Paper busy release
+2025-09-15 12:16:41,455 - DEBUG - Horizontal
+2025-09-15 12:16:41,633 - DEBUG - e-Paper busy
+2025-09-15 12:16:43,884 - DEBUG - e-Paper busy release
+2025-09-15 12:16:43,911 - DEBUG - Horizontal
+2025-09-15 12:16:44,077 - DEBUG - e-Paper busy
+2025-09-15 12:16:46,328 - DEBUG - e-Paper busy release
+2025-09-15 12:16:46,355 - DEBUG - Horizontal
+2025-09-15 12:16:46,541 - DEBUG - e-Paper busy
+2025-09-15 12:16:48,798 - DEBUG - e-Paper busy release
+2025-09-15 12:16:48,842 - DEBUG - Horizontal
+2025-09-15 12:16:49,030 - DEBUG - e-Paper busy
+2025-09-15 12:16:51,281 - DEBUG - e-Paper busy release
+2025-09-15 12:16:51,308 - DEBUG - Horizontal
+2025-09-15 12:16:51,474 - DEBUG - e-Paper busy
+2025-09-15 12:16:53,726 - DEBUG - e-Paper busy release
+2025-09-15 12:16:53,752 - DEBUG - Horizontal
+2025-09-15 12:16:53,930 - DEBUG - e-Paper busy
+2025-09-15 12:16:56,186 - DEBUG - e-Paper busy release
+2025-09-15 12:16:56,227 - DEBUG - Horizontal
+2025-09-15 12:16:56,418 - DEBUG - e-Paper busy
+2025-09-15 12:16:58,669 - DEBUG - e-Paper busy release
+2025-09-15 12:16:58,696 - DEBUG - Horizontal
+2025-09-15 12:16:58,861 - DEBUG - e-Paper busy
+2025-09-15 12:17:01,113 - DEBUG - e-Paper busy release
+2025-09-15 12:17:01,140 - DEBUG - Horizontal
+2025-09-15 12:17:01,305 - DEBUG - e-Paper busy
+2025-09-15 12:17:03,562 - DEBUG - e-Paper busy release
+2025-09-15 12:17:03,606 - DEBUG - Horizontal
+2025-09-15 12:17:03,777 - DEBUG - e-Paper busy
+2025-09-15 12:17:06,029 - DEBUG - e-Paper busy release
+2025-09-15 12:17:06,056 - DEBUG - Horizontal
+2025-09-15 12:17:06,221 - DEBUG - e-Paper busy
+2025-09-15 12:17:08,473 - DEBUG - e-Paper busy release
+2025-09-15 12:17:08,500 - DEBUG - Horizontal
+2025-09-15 12:17:08,691 - DEBUG - e-Paper busy
+2025-09-15 12:17:10,948 - DEBUG - e-Paper busy release
+2025-09-15 12:17:10,992 - DEBUG - Horizontal
+2025-09-15 12:17:11,173 - DEBUG - e-Paper busy
+2025-09-15 12:17:13,425 - DEBUG - e-Paper busy release
+2025-09-15 12:17:13,452 - DEBUG - Horizontal
+2025-09-15 12:17:13,617 - DEBUG - e-Paper busy
+2025-09-15 12:17:15,869 - DEBUG - e-Paper busy release
+2025-09-15 12:17:15,896 - DEBUG - Horizontal
+2025-09-15 12:17:16,078 - DEBUG - e-Paper busy
+2025-09-15 12:17:18,334 - DEBUG - e-Paper busy release
+2025-09-15 12:17:18,378 - DEBUG - Horizontal
+2025-09-15 12:17:18,570 - DEBUG - e-Paper busy
+2025-09-15 12:17:20,822 - DEBUG - e-Paper busy release
+2025-09-15 12:17:20,849 - DEBUG - Horizontal
+2025-09-15 12:17:21,014 - DEBUG - e-Paper busy
+2025-09-15 12:17:23,266 - DEBUG - e-Paper busy release
+2025-09-15 12:17:23,292 - DEBUG - Horizontal
+2025-09-15 12:17:23,466 - DEBUG - e-Paper busy
+2025-09-15 12:17:25,722 - DEBUG - e-Paper busy release
+2025-09-15 12:17:25,770 - DEBUG - Horizontal
+2025-09-15 12:17:25,966 - DEBUG - e-Paper busy
+2025-09-15 12:17:28,217 - DEBUG - e-Paper busy release
+2025-09-15 12:17:28,244 - DEBUG - Horizontal
+2025-09-15 12:17:28,409 - DEBUG - e-Paper busy
+2025-09-15 12:17:30,661 - DEBUG - e-Paper busy release
+2025-09-15 12:17:30,688 - DEBUG - Horizontal
+2025-09-15 12:17:30,854 - DEBUG - e-Paper busy
+2025-09-15 12:17:33,110 - DEBUG - e-Paper busy release
+2025-09-15 12:17:33,160 - DEBUG - Horizontal
+2025-09-15 12:17:33,334 - DEBUG - e-Paper busy
+2025-09-15 12:17:35,586 - DEBUG - e-Paper busy release
+2025-09-15 12:17:35,615 - DEBUG - Horizontal
+2025-09-15 12:17:35,785 - DEBUG - e-Paper busy
+2025-09-15 12:17:38,037 - DEBUG - e-Paper busy release
+2025-09-15 12:17:38,064 - DEBUG - Horizontal
+2025-09-15 12:17:38,267 - DEBUG - e-Paper busy
+2025-09-15 12:17:40,523 - DEBUG - e-Paper busy release
+2025-09-15 12:17:40,568 - DEBUG - Horizontal
+2025-09-15 12:17:40,739 - DEBUG - e-Paper busy
+2025-09-15 12:17:42,990 - DEBUG - e-Paper busy release
+2025-09-15 12:17:43,017 - DEBUG - Horizontal
+2025-09-15 12:17:43,183 - DEBUG - e-Paper busy
+2025-09-15 12:17:45,434 - DEBUG - e-Paper busy release
+2025-09-15 12:17:45,461 - DEBUG - Horizontal
+2025-09-15 12:17:45,654 - DEBUG - e-Paper busy
+2025-09-15 12:17:47,910 - DEBUG - e-Paper busy release
+2025-09-15 12:17:47,954 - DEBUG - Horizontal
+2025-09-15 12:17:48,136 - DEBUG - e-Paper busy
+2025-09-15 12:17:50,388 - DEBUG - e-Paper busy release
+2025-09-15 12:17:50,415 - DEBUG - Horizontal
+2025-09-15 12:17:50,580 - DEBUG - e-Paper busy
+2025-09-15 12:17:52,832 - DEBUG - e-Paper busy release
+2025-09-15 12:17:52,859 - DEBUG - Horizontal
+2025-09-15 12:17:53,040 - DEBUG - e-Paper busy
+2025-09-15 12:17:55,296 - DEBUG - e-Paper busy release
+2025-09-15 12:17:55,341 - DEBUG - Horizontal
+2025-09-15 12:17:55,534 - DEBUG - e-Paper busy
+2025-09-15 12:17:57,785 - DEBUG - e-Paper busy release
+2025-09-15 12:17:57,812 - DEBUG - Horizontal
+2025-09-15 12:17:57,977 - DEBUG - e-Paper busy
+2025-09-15 12:18:00,229 - DEBUG - e-Paper busy release
+2025-09-15 12:18:00,256 - DEBUG - Horizontal
+2025-09-15 12:18:00,428 - DEBUG - e-Paper busy
+2025-09-15 12:18:02,685 - DEBUG - e-Paper busy release
+2025-09-15 12:18:02,728 - DEBUG - Horizontal
+2025-09-15 12:18:02,912 - DEBUG - e-Paper busy
+2025-09-15 12:18:05,164 - DEBUG - e-Paper busy release
+2025-09-15 12:18:05,191 - DEBUG - Horizontal
+2025-09-15 12:18:05,356 - DEBUG - e-Paper busy
+2025-09-15 12:18:07,608 - DEBUG - e-Paper busy release
+2025-09-15 12:18:07,635 - DEBUG - Horizontal
+2025-09-15 12:18:07,800 - DEBUG - e-Paper busy
+2025-09-15 12:18:10,055 - DEBUG - e-Paper busy release
+2025-09-15 12:18:10,100 - DEBUG - Horizontal
+2025-09-15 12:18:10,281 - DEBUG - e-Paper busy
+2025-09-15 12:18:12,533 - DEBUG - e-Paper busy release
+2025-09-15 12:18:12,560 - DEBUG - Horizontal
+2025-09-15 12:18:12,725 - DEBUG - e-Paper busy
+2025-09-15 12:18:14,977 - DEBUG - e-Paper busy release
+2025-09-15 12:18:15,004 - DEBUG - Horizontal
+2025-09-15 12:18:15,187 - DEBUG - e-Paper busy
+2025-09-15 12:18:17,443 - DEBUG - e-Paper busy release
+2025-09-15 12:18:17,487 - DEBUG - Horizontal
+2025-09-15 12:18:17,679 - DEBUG - e-Paper busy
+2025-09-15 12:18:19,931 - DEBUG - e-Paper busy release
+2025-09-15 12:18:19,958 - DEBUG - Horizontal
+2025-09-15 12:18:20,123 - DEBUG - e-Paper busy
+2025-09-15 12:18:22,374 - DEBUG - e-Paper busy release
+2025-09-15 12:18:22,401 - DEBUG - Horizontal
+2025-09-15 12:18:22,575 - DEBUG - e-Paper busy
+2025-09-15 12:18:24,831 - DEBUG - e-Paper busy release
+2025-09-15 12:18:24,873 - DEBUG - Horizontal
+2025-09-15 12:18:25,067 - DEBUG - e-Paper busy
+2025-09-15 12:18:27,318 - DEBUG - e-Paper busy release
+2025-09-15 12:18:27,345 - DEBUG - Horizontal
+2025-09-15 12:18:27,510 - DEBUG - e-Paper busy
+2025-09-15 12:18:29,762 - DEBUG - e-Paper busy release
+2025-09-15 12:18:29,789 - DEBUG - Horizontal
+2025-09-15 12:18:29,954 - DEBUG - e-Paper busy
+2025-09-15 12:18:32,210 - DEBUG - e-Paper busy release
+2025-09-15 12:18:32,254 - DEBUG - Horizontal
+2025-09-15 12:18:32,429 - DEBUG - e-Paper busy
+2025-09-15 12:18:34,681 - DEBUG - e-Paper busy release
+2025-09-15 12:18:34,708 - DEBUG - Horizontal
+2025-09-15 12:18:34,873 - DEBUG - e-Paper busy
+2025-09-15 12:18:37,125 - DEBUG - e-Paper busy release
+2025-09-15 12:18:37,152 - DEBUG - Horizontal
+2025-09-15 12:18:37,340 - DEBUG - e-Paper busy
+2025-09-15 12:18:39,596 - DEBUG - e-Paper busy release
+2025-09-15 12:18:39,647 - DEBUG - Horizontal
+2025-09-15 12:18:39,839 - DEBUG - e-Paper busy
+2025-09-15 12:18:42,090 - DEBUG - e-Paper busy release
+2025-09-15 12:18:42,117 - DEBUG - Horizontal
+2025-09-15 12:18:42,282 - DEBUG - e-Paper busy
+2025-09-15 12:18:44,534 - DEBUG - e-Paper busy release
+2025-09-15 12:18:44,561 - DEBUG - Horizontal
+2025-09-15 12:18:44,745 - DEBUG - e-Paper busy
+2025-09-15 12:18:47,001 - DEBUG - e-Paper busy release
+2025-09-15 12:18:47,046 - DEBUG - Horizontal
+2025-09-15 12:18:47,235 - DEBUG - e-Paper busy
+2025-09-15 12:18:49,487 - DEBUG - e-Paper busy release
+2025-09-15 12:18:49,514 - DEBUG - Horizontal
+2025-09-15 12:18:49,679 - DEBUG - e-Paper busy
+2025-09-15 12:18:51,931 - DEBUG - e-Paper busy release
+2025-09-15 12:18:51,957 - DEBUG - Horizontal
+2025-09-15 12:18:52,133 - DEBUG - e-Paper busy
+2025-09-15 12:18:54,389 - DEBUG - e-Paper busy release
+2025-09-15 12:18:54,432 - DEBUG - Horizontal
+2025-09-15 12:18:54,624 - DEBUG - e-Paper busy
+2025-09-15 12:18:56,875 - DEBUG - e-Paper busy release
+2025-09-15 12:18:56,902 - DEBUG - Horizontal
+2025-09-15 12:18:57,067 - DEBUG - e-Paper busy
+2025-09-15 12:18:59,319 - DEBUG - e-Paper busy release
+2025-09-15 12:18:59,346 - DEBUG - Horizontal
+2025-09-15 12:18:59,511 - DEBUG - e-Paper busy
+2025-09-15 12:19:01,766 - DEBUG - e-Paper busy release
+2025-09-15 12:19:01,811 - DEBUG - Horizontal
+2025-09-15 12:19:01,984 - DEBUG - e-Paper busy
+2025-09-15 12:19:04,236 - DEBUG - e-Paper busy release
+2025-09-15 12:19:04,263 - DEBUG - Horizontal
+2025-09-15 12:19:04,428 - DEBUG - e-Paper busy
+2025-09-15 12:19:06,680 - DEBUG - e-Paper busy release
+2025-09-15 12:19:06,707 - DEBUG - Horizontal
+2025-09-15 12:19:06,897 - DEBUG - e-Paper busy
+2025-09-15 12:19:09,153 - DEBUG - e-Paper busy release
+2025-09-15 12:19:09,197 - DEBUG - Horizontal
+2025-09-15 12:19:09,387 - DEBUG - e-Paper busy
+2025-09-15 12:19:11,639 - DEBUG - e-Paper busy release
+2025-09-15 12:19:11,666 - DEBUG - Horizontal
+2025-09-15 12:19:11,831 - DEBUG - e-Paper busy
+2025-09-15 12:19:14,083 - DEBUG - e-Paper busy release
+2025-09-15 12:19:14,110 - DEBUG - Horizontal
+2025-09-15 12:19:14,294 - DEBUG - e-Paper busy
+2025-09-15 12:19:16,550 - DEBUG - e-Paper busy release
+2025-09-15 12:19:16,594 - DEBUG - Horizontal
+2025-09-15 12:19:16,785 - DEBUG - e-Paper busy
+2025-09-15 12:19:19,037 - DEBUG - e-Paper busy release
+2025-09-15 12:19:19,064 - DEBUG - Horizontal
+2025-09-15 12:19:19,229 - DEBUG - e-Paper busy
+2025-09-15 12:19:21,481 - DEBUG - e-Paper busy release
+2025-09-15 12:19:21,508 - DEBUG - Horizontal
+2025-09-15 12:19:21,682 - DEBUG - e-Paper busy
+2025-09-15 12:19:23,938 - DEBUG - e-Paper busy release
+2025-09-15 12:19:23,981 - DEBUG - Horizontal
+2025-09-15 12:19:24,165 - DEBUG - e-Paper busy
+2025-09-15 12:19:26,417 - DEBUG - e-Paper busy release
+2025-09-15 12:19:26,444 - DEBUG - Horizontal
+2025-09-15 12:19:26,609 - DEBUG - e-Paper busy
+2025-09-15 12:19:28,861 - DEBUG - e-Paper busy release
+2025-09-15 12:19:28,888 - DEBUG - Horizontal
+2025-09-15 12:19:29,053 - DEBUG - e-Paper busy
+2025-09-15 12:19:31,309 - DEBUG - e-Paper busy release
+2025-09-15 12:19:31,353 - DEBUG - Horizontal
+2025-09-15 12:19:31,532 - DEBUG - e-Paper busy
+2025-09-15 12:19:33,784 - DEBUG - e-Paper busy release
+2025-09-15 12:19:33,811 - DEBUG - Horizontal
+2025-09-15 12:19:33,977 - DEBUG - e-Paper busy
+2025-09-15 12:19:36,228 - DEBUG - e-Paper busy release
+2025-09-15 12:19:36,255 - DEBUG - Horizontal
+2025-09-15 12:19:36,441 - DEBUG - e-Paper busy
+2025-09-15 12:19:38,698 - DEBUG - e-Paper busy release
+2025-09-15 12:19:38,742 - DEBUG - Horizontal
+2025-09-15 12:19:38,931 - DEBUG - e-Paper busy
+2025-09-15 12:19:41,183 - DEBUG - e-Paper busy release
+2025-09-15 12:19:41,209 - DEBUG - Horizontal
+2025-09-15 12:19:41,375 - DEBUG - e-Paper busy
+2025-09-15 12:19:43,626 - DEBUG - e-Paper busy release
+2025-09-15 12:19:43,653 - DEBUG - Horizontal
+2025-09-15 12:19:43,829 - DEBUG - e-Paper busy
+2025-09-15 12:19:46,086 - DEBUG - e-Paper busy release
+2025-09-15 12:19:46,126 - DEBUG - Horizontal
+2025-09-15 12:19:46,316 - DEBUG - e-Paper busy
+2025-09-15 12:19:48,567 - DEBUG - e-Paper busy release
+2025-09-15 12:19:48,594 - DEBUG - Horizontal
+2025-09-15 12:19:48,760 - DEBUG - e-Paper busy
+2025-09-15 12:19:51,012 - DEBUG - e-Paper busy release
+2025-09-15 12:19:51,038 - DEBUG - Horizontal
+2025-09-15 12:19:51,204 - DEBUG - e-Paper busy
+2025-09-15 12:19:53,459 - DEBUG - e-Paper busy release
+2025-09-15 12:19:53,504 - DEBUG - Horizontal
+2025-09-15 12:19:53,675 - DEBUG - e-Paper busy
+2025-09-15 12:19:55,926 - DEBUG - e-Paper busy release
+2025-09-15 12:19:55,953 - DEBUG - Horizontal
+2025-09-15 12:19:56,118 - DEBUG - e-Paper busy
+2025-09-15 12:19:58,370 - DEBUG - e-Paper busy release
+2025-09-15 12:19:58,397 - DEBUG - Horizontal
+2025-09-15 12:19:58,589 - DEBUG - e-Paper busy
+2025-09-15 12:20:00,846 - DEBUG - e-Paper busy release
+2025-09-15 12:20:00,890 - DEBUG - Horizontal
+2025-09-15 12:20:01,071 - DEBUG - e-Paper busy
+2025-09-15 12:20:03,323 - DEBUG - e-Paper busy release
+2025-09-15 12:20:03,350 - DEBUG - Horizontal
+2025-09-15 12:20:03,515 - DEBUG - e-Paper busy
+2025-09-15 12:20:05,767 - DEBUG - e-Paper busy release
+2025-09-15 12:20:05,794 - DEBUG - Horizontal
+2025-09-15 12:20:05,978 - DEBUG - e-Paper busy
+2025-09-15 12:20:08,234 - DEBUG - e-Paper busy release
+2025-09-15 12:20:08,278 - DEBUG - Horizontal
+2025-09-15 12:20:08,469 - DEBUG - e-Paper busy
+2025-09-15 12:20:10,721 - DEBUG - e-Paper busy release
+2025-09-15 12:20:10,748 - DEBUG - Horizontal
+2025-09-15 12:20:10,913 - DEBUG - e-Paper busy
+2025-09-15 12:20:13,165 - DEBUG - e-Paper busy release
+2025-09-15 12:20:13,192 - DEBUG - Horizontal
+2025-09-15 12:20:13,365 - DEBUG - e-Paper busy
+2025-09-15 12:20:15,621 - DEBUG - e-Paper busy release
+2025-09-15 12:20:15,664 - DEBUG - Horizontal
+2025-09-15 12:20:15,856 - DEBUG - e-Paper busy
+2025-09-15 12:20:18,107 - DEBUG - e-Paper busy release
+2025-09-15 12:20:18,136 - DEBUG - Horizontal
+2025-09-15 12:20:18,308 - DEBUG - e-Paper busy
+2025-09-15 12:20:20,560 - DEBUG - e-Paper busy release
+2025-09-15 12:20:20,587 - DEBUG - Horizontal
+2025-09-15 12:20:20,752 - DEBUG - e-Paper busy
+2025-09-15 12:20:23,008 - DEBUG - e-Paper busy release
+2025-09-15 12:20:23,052 - DEBUG - Horizontal
+2025-09-15 12:20:23,223 - DEBUG - e-Paper busy
+2025-09-15 12:20:25,474 - DEBUG - e-Paper busy release
+2025-09-15 12:20:25,501 - DEBUG - Horizontal
+2025-09-15 12:20:25,666 - DEBUG - e-Paper busy
+2025-09-15 12:20:27,918 - DEBUG - e-Paper busy release
+2025-09-15 12:20:27,945 - DEBUG - Horizontal
+2025-09-15 12:20:28,137 - DEBUG - e-Paper busy
+2025-09-15 12:20:30,394 - DEBUG - e-Paper busy release
+2025-09-15 12:20:30,437 - DEBUG - Horizontal
+2025-09-15 12:20:30,619 - DEBUG - e-Paper busy
+2025-09-15 12:20:32,870 - DEBUG - e-Paper busy release
+2025-09-15 12:20:32,897 - DEBUG - Horizontal
+2025-09-15 12:20:33,063 - DEBUG - e-Paper busy
+2025-09-15 12:20:35,314 - DEBUG - e-Paper busy release
+2025-09-15 12:20:35,341 - DEBUG - Horizontal
+2025-09-15 12:20:35,524 - DEBUG - e-Paper busy
+2025-09-15 12:20:37,780 - DEBUG - e-Paper busy release
+2025-09-15 12:20:37,819 - DEBUG - Horizontal
+2025-09-15 12:20:38,006 - DEBUG - e-Paper busy
+2025-09-15 12:20:40,258 - DEBUG - e-Paper busy release
+2025-09-15 12:20:40,284 - DEBUG - Horizontal
+2025-09-15 12:20:40,449 - DEBUG - e-Paper busy
+2025-09-15 12:20:42,701 - DEBUG - e-Paper busy release
+2025-09-15 12:20:42,728 - DEBUG - Horizontal
+2025-09-15 12:20:42,896 - DEBUG - e-Paper busy
+2025-09-15 12:20:45,152 - DEBUG - e-Paper busy release
+2025-09-15 12:20:45,196 - DEBUG - Horizontal
+2025-09-15 12:20:45,383 - DEBUG - e-Paper busy
+2025-09-15 12:20:47,635 - DEBUG - e-Paper busy release
+2025-09-15 12:20:47,662 - DEBUG - Horizontal
+2025-09-15 12:20:47,827 - DEBUG - e-Paper busy
+2025-09-15 12:20:50,079 - DEBUG - e-Paper busy release
+2025-09-15 12:20:50,106 - DEBUG - Horizontal
+2025-09-15 12:20:50,271 - DEBUG - e-Paper busy
+2025-09-15 12:20:52,526 - DEBUG - e-Paper busy release
+2025-09-15 12:20:52,570 - DEBUG - Horizontal
+2025-09-15 12:20:52,753 - DEBUG - e-Paper busy
+2025-09-15 12:20:55,005 - DEBUG - e-Paper busy release
+2025-09-15 12:20:55,032 - DEBUG - Horizontal
+2025-09-15 12:20:55,197 - DEBUG - e-Paper busy
+2025-09-15 12:20:57,449 - DEBUG - e-Paper busy release
+2025-09-15 12:20:57,476 - DEBUG - Horizontal
+2025-09-15 12:20:57,657 - DEBUG - e-Paper busy
+2025-09-15 12:20:59,913 - DEBUG - e-Paper busy release
+2025-09-15 12:20:59,957 - DEBUG - Horizontal
+2025-09-15 12:21:00,150 - DEBUG - e-Paper busy
+2025-09-15 12:21:02,402 - DEBUG - e-Paper busy release
+2025-09-15 12:21:02,429 - DEBUG - Horizontal
+2025-09-15 12:21:02,594 - DEBUG - e-Paper busy
+2025-09-15 12:21:04,845 - DEBUG - e-Paper busy release
+2025-09-15 12:21:04,872 - DEBUG - Horizontal
+2025-09-15 12:21:05,046 - DEBUG - e-Paper busy
+2025-09-15 12:21:07,302 - DEBUG - e-Paper busy release
+2025-09-15 12:21:07,345 - DEBUG - Horizontal
+2025-09-15 12:21:07,538 - DEBUG - e-Paper busy
+2025-09-15 12:21:09,790 - DEBUG - e-Paper busy release
+2025-09-15 12:21:09,817 - DEBUG - Horizontal
+2025-09-15 12:21:09,982 - DEBUG - e-Paper busy
+2025-09-15 12:21:12,234 - DEBUG - e-Paper busy release
+2025-09-15 12:21:12,261 - DEBUG - Horizontal
+2025-09-15 12:21:12,426 - DEBUG - e-Paper busy
+2025-09-15 12:21:14,681 - DEBUG - e-Paper busy release
+2025-09-15 12:21:14,726 - DEBUG - Horizontal
+2025-09-15 12:21:14,902 - DEBUG - e-Paper busy
+2025-09-15 12:21:17,153 - DEBUG - e-Paper busy release
+2025-09-15 12:21:17,180 - DEBUG - Horizontal
+2025-09-15 12:21:17,346 - DEBUG - e-Paper busy
+2025-09-15 12:21:19,597 - DEBUG - e-Paper busy release
+2025-09-15 12:21:19,624 - DEBUG - Horizontal
+2025-09-15 12:21:19,812 - DEBUG - e-Paper busy
+2025-09-15 12:21:22,068 - DEBUG - e-Paper busy release
+2025-09-15 12:21:22,112 - DEBUG - Horizontal
+2025-09-15 12:21:22,300 - DEBUG - e-Paper busy
+2025-09-15 12:21:24,552 - DEBUG - e-Paper busy release
+2025-09-15 12:21:24,579 - DEBUG - Horizontal
+2025-09-15 12:21:24,744 - DEBUG - e-Paper busy
+2025-09-15 12:21:26,996 - DEBUG - e-Paper busy release
+2025-09-15 12:21:27,022 - DEBUG - Horizontal
+2025-09-15 12:21:27,200 - DEBUG - e-Paper busy
+2025-09-15 12:21:29,456 - DEBUG - e-Paper busy release
+2025-09-15 12:21:29,497 - DEBUG - Horizontal
+2025-09-15 12:21:29,688 - DEBUG - e-Paper busy
+2025-09-15 12:21:31,940 - DEBUG - e-Paper busy release
+2025-09-15 12:21:31,967 - DEBUG - Horizontal
+2025-09-15 12:21:32,132 - DEBUG - e-Paper busy
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
