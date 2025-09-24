@@ -100,22 +100,18 @@ class DisplayManager:
             filename = "sim_output.png"
             self.image.save(filename)
             logging.debug(f"Saved simulated display to {filename}")
-        elif is_full_refresh:
-            # A true full refresh involves re-initializing and clearing.
-            # This is what causes the "flash".
+            return
+
+        # For V2 displays, re-initializing before any draw is key to clearing ghosting.
+        # This wakes the display if it was sleeping and prepares it for a clean update.
+        self.epd.init()
+        self._is_sleeping = False
+
+        if is_full_refresh:
             logging.debug("Performing full display refresh.")
-            self.epd.init()
             self.epd.display(self.epd.getbuffer(self.image))
-            self.epd.sleep() # Put to sleep to save power after full refresh
-            self._is_sleeping = True
         else:
-            # For a partial refresh, we need to wake the display up if it was sleeping.
-            # Re-initializing also helps clear ghosting artifacts from previous partial updates.
             logging.debug("Performing partial display refresh.")
-            if self._is_sleeping:
-                self.epd.init() # Wake the display up
-                self._is_sleeping = False
-            # For V2 displays, re-initializing before a partial draw is key to clearing ghosting.
             self.epd.display_Partial(self.epd.getbuffer(self.image))
 
     def sleep(self):
@@ -142,7 +138,19 @@ class DisplayManager:
             current_y += bbox[3] + 4 # Add line height plus a small gap
         return current_y
 
-    def _draw_wrapped_text(self, y, text, font, margin):
+    def show_message(self, message, fatal_error=False):
+        """Displays a message on the screen for a certain duration."""
+        # Use persistent draw object and clear it for the message
+        self.draw.rectangle((0, 0, self.width, self.height), fill=255)
+        self._draw_text_centered(self.draw, self.height // 2, message, self.fonts['menu'])
+        self.display_image(is_full_refresh=True)
+        
+        if fatal_error:
+            time.sleep(10)
+        else:
+            time.sleep(3)
+
+    def _draw_wrapped_text(self, y, text, font, margin, centered=False):
         """Helper to draw text that wraps within the screen margins."""
         words = text.split(' ')
         lines = []
@@ -160,7 +168,29 @@ class DisplayManager:
         lines.append(current_line.strip()) # Add the last line
 
         for line in lines:
+            x = margin
+            if centered:
+                bbox = self.draw.textbbox((0, 0), line, font=font)
+                text_width = bbox[2] - bbox[0]
+                x = (self.width - text_width) / 2
             bbox = self.draw.textbbox((0, y), line, font=font)
-            self.draw.text((margin, y), line, font=font, fill=0)
+            self.draw.text((x, y), line, font=font, fill=0)
             y += (bbox[3] - bbox[1]) + 4 # Add line height plus a small gap
         return y
+
+    def draw_confirmation_dialog(self, prompt, option1="Yes", option2="No"):
+        """Draws a centered confirmation box. Returns y-pos for footer."""
+        box_width, box_height = 300, 150
+        box_x, box_y = (self.width - box_width) // 2, (self.height - box_height) // 2
+        
+        # Draw shadow, then box
+        self.draw.rectangle((box_x + 5, box_y + 5, box_x + box_width + 5, box_y + box_height + 5), fill=0)
+        self.draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), fill=255, outline=0, width=2)
+
+        # Draw prompt text
+        prompt_y = self._draw_wrapped_text(box_y + 20, prompt, self.fonts['menu'], box_x + 15)
+
+        # Draw options
+        self.draw.text((box_x + 40, prompt_y + 20), f"1. {option1}", font=self.fonts['list'], fill=0)
+        self.draw.text((box_x + 180, prompt_y + 20), f"2. {option2}", font=self.fonts['list'], fill=0)
+        return box_y + box_height + 20

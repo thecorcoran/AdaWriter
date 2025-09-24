@@ -8,15 +8,19 @@ AdaWriter is a minimalist, distraction-free writing device powered by a Raspberr
 
 *   **Distraction-Free E-Paper Display**: Easy on the eyes, with a simple, clean interface.
 *   **Full-Fledged Text Editor**:
-    *   Full cursor navigation (Up, Down, Left, Right).
-    *   Character, word, and line manipulation.
+    *   WYSIWYG cursor navigation that respects word wrapping.
+    *   Character, word, and line manipulation (Enter, Backspace).
     *   Auto-saving and manual saving on exit.
 *   **File Management**:
     *   **Daily Journal**: A one-press option to open a timestamped journal entry for the current day.
     *   **Project Browser**: A scrollable list to manage and edit multiple project files.
 *   **Wi-Fi Connectivity**:
     *   Connect to new Wi-Fi networks directly from the device.
-    *   Start a web server to download your project files to any computer on the same network.
+    *   **Web Interface**: Access a full-featured web server from another computer on the same network to:
+        *   Download files as `.txt` or `.docx`.
+        *   Upload `.txt` files from your computer to the device.
+        *   Edit files directly in the browser.
+        *   Archive, delete, and restore files from a trash folder.
 *   **Portable and Low-Power**: Designed to be used anywhere.
 
 ## Hardware Requirements
@@ -43,10 +47,10 @@ Navigate to `3 Interface Options` -> `I4 SPI` and select `<Yes>` to enable it.
 ### 2. Install System Dependencies
 
 Install the necessary system libraries and tools.
-
+`python-docx` requires the following libraries for XML processing.
 ```bash
 sudo apt-get update
-sudo apt-get install -y git python3-pip python3-pil python3-numpy
+sudo apt-get install -y git python3-pip python3-pil python3-numpy libxml2-dev libxslt1-dev
 ```
 
 ### 3. Install E-Paper Driver

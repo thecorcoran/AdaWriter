@@ -6,5 +6,6 @@ evdev       # For low-level keyboard input reading
 netifaces   # To get network interface IP addresses
 Pillow      # Python Imaging Library, for drawing to the display
 Flask       # Powers the web server for file downloads
+python-docx # For creating .docx files from the web server
 
 # Note: The 'waveshare-epd' library is a hardware driver and must be installed separately from source.
