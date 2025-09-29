@@ -102,10 +102,10 @@ class DisplayManager:
             logging.debug(f"Saved simulated display to {filename}")
             return
 
-        # For V2 displays, re-initializing before any draw is key to clearing ghosting.
-        # This wakes the display if it was sleeping and prepares it for a clean update.
-        self.epd.init()
-        self._is_sleeping = False
+        # If the display is sleeping, it must be re-initialized before an update.
+        if self._is_sleeping:
+            self.epd.init()
+            self._is_sleeping = False
 
         if is_full_refresh:
             logging.debug("Performing full display refresh.")
@@ -127,11 +127,11 @@ class DisplayManager:
         """Helper to draw centered text. Returns the new y-position."""
         # Use textbbox to get the bounding box of the text.
         lines = text.split('\n')
-        total_height = sum(self.draw.textbbox((0,0), line, font=font)[3] for line in lines)
+        total_height = sum(draw.textbbox((0,0), line, font=font)[3] for line in lines)
         current_y = y - total_height // 2
 
         for line in lines:
-            bbox = self.draw.textbbox((0, 0), line, font=font)
+            bbox = draw.textbbox((0, 0), line, font=font)
             text_width = bbox[2] - bbox[0]
             x = (self.width - text_width) / 2
             draw.text((x, current_y), line, font=font, fill=0)
