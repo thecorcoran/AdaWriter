@@ -215,31 +215,34 @@ class AdaWriter:
             return
 
         selected_index = 0; scroll_offset = 0
+        needs_redraw = True
         
         while True:
-            draw = self.display.draw
-            draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-            self.display._draw_text_centered(draw, 30, "Projects", self.display.fonts['heading'])
-            draw.line([(20, 50), (self.display.width - 20, 50)], fill=0, width=1)
-            list_font = self.display.fonts['list']
-            max_items_on_screen = (self.display.height - 100) // (list_font.getbbox("Tg")[3] + 10)
-            
-            if selected_index < scroll_offset: scroll_offset = selected_index
-            if selected_index >= scroll_offset + max_items_on_screen:
-                scroll_offset = selected_index - max_items_on_screen + 1
+            if needs_redraw:
+                draw = self.display.draw
+                draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
+                self.display._draw_text_centered(draw, 30, "Projects", self.display.fonts['heading'])
+                draw.line([(20, 50), (self.display.width - 20, 50)], fill=0, width=1)
+                list_font = self.display.fonts['list']
+                max_items_on_screen = (self.display.height - 100) // (list_font.getbbox("Tg")[3] + 10)
+                
+                if selected_index < scroll_offset: scroll_offset = selected_index
+                if selected_index >= scroll_offset + max_items_on_screen:
+                    scroll_offset = selected_index - max_items_on_screen + 1
 
-            y = 70
-            for i, filename in enumerate(files[scroll_offset : scroll_offset + max_items_on_screen]):
-                display_index = i + scroll_offset
-                base_name = os.path.splitext(filename)[0]
-                display_name = (base_name[:35] + '...') if len(base_name) > 38 else base_name
-                prefix = "> " if display_index == selected_index else "  "
-                draw.text((20, y), f"{prefix}{display_name}", font=list_font, fill=0)
-                y += list_font.getbbox(filename)[3] + 15
+                y = 70
+                for i, filename in enumerate(files[scroll_offset : scroll_offset + max_items_on_screen]):
+                    display_index = i + scroll_offset
+                    base_name = os.path.splitext(filename)[0]
+                    display_name = (base_name[:35] + '...') if len(base_name) > 38 else base_name
+                    prefix = "> " if display_index == selected_index else "  "
+                    draw.text((20, y), f"{prefix}{display_name}", font=list_font, fill=0)
+                    y += list_font.getbbox(filename)[3] + 15
 
-            footer_text = "Enter=Open, R=Rename, N=New, Del=Delete\nESC=Return"
-            self.display._draw_text_centered(draw, self.display.height - 25, footer_text, self.display.fonts['footer'])
-            self.display.display_image(is_full_refresh=True)
+                footer_text = "Enter=Open, R=Rename, N=New, Del=Delete\nESC=Return"
+                self.display._draw_text_centered(draw, self.display.height - 25, footer_text, self.display.fonts['footer'])
+                self.display.display_image(is_full_refresh=True)
+                needs_redraw = False
 
             choice = self.wait_for_direct_choice([ecodes.KEY_UP, ecodes.KEY_DOWN, ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT, ecodes.KEY_PAGEUP, ecodes.KEY_PAGEDOWN, ecodes.KEY_ENTER, ecodes.KEY_ESC, ecodes.KEY_R, ecodes.KEY_N, ecodes.KEY_DELETE])
 
@@ -250,11 +253,13 @@ class AdaWriter:
                     selected_index = min(len(files) - 1, selected_index + max_items_on_screen)
                 else:
                     selected_index = (selected_index + 1) % len(files)
+                needs_redraw = True
             elif choice == ecodes.KEY_UP:
                 if self.keyboard.shift_pressed:
                     selected_index = max(0, selected_index - max_items_on_screen)
                 else:
                     selected_index = (selected_index - 1 + len(files)) % len(files)
+                needs_redraw = True
             elif choice == ecodes.KEY_ESC: return
             elif choice == ecodes.KEY_N:
                 self.create_new_project()
@@ -304,22 +309,27 @@ class AdaWriter:
     def show_wifi_menu(self):
         """Shows Wi-Fi options: start web server or connect to a new network."""
         draw = self.display.draw
+        needs_redraw = True
         while True:
-            draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-            self.display._draw_text_centered(draw, 30, "Wi-Fi & Network", self.display.fonts['heading'])
-            menu_items = ["1. Start Web Server", "2. Connect to New Wi-Fi"]
-            y = 100
-            for item in menu_items:
-                draw.text((40, y), item, font=self.display.fonts['menu'], fill=0)
-                y += 40
-            self.display._draw_text_centered(draw, self.display.height - 25, "ESC to Return", self.display.fonts['footer'])
-            self.display.display_image(is_full_refresh=True)
+            if needs_redraw:
+                draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
+                self.display._draw_text_centered(draw, 30, "Wi-Fi & Network", self.display.fonts['heading'])
+                menu_items = ["1. Start Web Server", "2. Connect to New Wi-Fi"]
+                y = 100
+                for item in menu_items:
+                    draw.text((40, y), item, font=self.display.fonts['menu'], fill=0)
+                    y += 40
+                self.display._draw_text_centered(draw, self.display.height - 25, "ESC to Return", self.display.fonts['footer'])
+                self.display.display_image(is_full_refresh=True)
+                needs_redraw = False
 
             choice = self.wait_for_direct_choice([ecodes.KEY_1, ecodes.KEY_2, ecodes.KEY_ESC])
-            if choice == ecodes.KEY_1: self.show_network_screen()
+            if choice == ecodes.KEY_1:
+                self.show_network_screen()
+                needs_redraw = True
             elif choice == ecodes.KEY_2:
                 self.show_wifi_setup_screen()
-                # After returning, the main loop will redraw the wifi menu with a full refresh.
+                needs_redraw = True
             elif choice == ecodes.KEY_ESC: break
 
     def get_ip_address(self):
@@ -387,9 +397,12 @@ class AdaWriter:
             draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
             self.display._draw_wrapped_text(30, prompt, self.display.fonts['heading'], config.TEXT_MARGIN)
             display_text = "*" * len(text) if is_password else text
-            draw.text((config.TEXT_MARGIN, 100), f"> {display_text}", font=self.display.fonts['editor'], fill=0)
             
-            cursor_x_start = config.TEXT_MARGIN + 12 + self.display.fonts['editor'].getbbox(display_text)[2]
+            prompt_prefix = "> "
+            draw.text((config.TEXT_MARGIN, 100), f"{prompt_prefix}{display_text}", font=self.display.fonts['editor'], fill=0)
+            
+            prefix_width = self.display.fonts['editor'].getbbox(prompt_prefix)[2]
+            cursor_x_start = config.TEXT_MARGIN + prefix_width + self.display.fonts['editor'].getbbox(display_text)[2]
             cursor_y_start = 100
             draw.rectangle([cursor_x_start, cursor_y_start, cursor_x_start + 10, cursor_y_start + 20], fill=0)
             self.display._draw_text_centered(draw, self.display.height - 40, "Enter=Done, ESC=Cancel", self.display.fonts['footer'])
@@ -450,27 +463,30 @@ class AdaWriter:
             return
 
         page, items_per_page = 0, 4
+        needs_redraw = True
         while True:
-            draw = self.display.draw
-            draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-            self.display._draw_text_centered(draw, 30, "Select Wi-Fi Network", self.display.fonts['heading'])
-            page_networks = networks[page * items_per_page : (page + 1) * items_per_page]
-            
-            y = 60
-            for i, net in enumerate(page_networks):
-                ssid = (net['ssid'][:20] + '..') if len(net['ssid']) > 22 else net['ssid']
-                signal_bars = min(int(net['signal']) // 25, 3) + 1
-                signal_str = '▂▄▆█'[:signal_bars]
-                draw.text((config.TEXT_MARGIN, y), f"{i+1}. {ssid}", font=self.display.fonts['list'], fill=0)
-                bbox = self.display.fonts['list'].getbbox(signal_str)
-                signal_w = bbox[2] - bbox[0]
-                draw.text((self.display.width - config.TEXT_MARGIN - signal_w, y), signal_str, font=self.display.fonts['list'], fill=0)
-                y += 35
+            if needs_redraw:
+                draw = self.display.draw
+                draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
+                self.display._draw_text_centered(draw, 30, "Select Wi-Fi Network", self.display.fonts['heading'])
+                page_networks = networks[page * items_per_page : (page + 1) * items_per_page]
+                
+                y = 60
+                for i, net in enumerate(page_networks):
+                    ssid = (net['ssid'][:20] + '..') if len(net['ssid']) > 22 else net['ssid']
+                    signal_bars = min(int(net['signal']) // 25, 3) + 1
+                    signal_str = '▂▄▆█'[:signal_bars]
+                    draw.text((config.TEXT_MARGIN, y), f"{i+1}. {ssid}", font=self.display.fonts['list'], fill=0)
+                    bbox = self.display.fonts['list'].getbbox(signal_str)
+                    signal_w = bbox[2] - bbox[0]
+                    draw.text((self.display.width - config.TEXT_MARGIN - signal_w, y), signal_str, font=self.display.fonts['list'], fill=0)
+                    y += 35
 
-            footer_parts = ["1-4 to Select", "ESC to Return"]
-            if len(networks) > (page + 1) * items_per_page: footer_parts.insert(1, "PgDn")
-            self.display._draw_text_centered(draw, self.display.height - 25, ", ".join(footer_parts), self.display.fonts['footer'])
-            self.display.display_image()
+                footer_parts = ["1-4 to Select", "ESC to Return"]
+                if len(networks) > (page + 1) * items_per_page: footer_parts.insert(1, "PgDn")
+                self.display._draw_text_centered(draw, self.display.height - 25, ", ".join(footer_parts), self.display.fonts['footer'])
+                self.display.display_image(is_full_refresh=True)
+                needs_redraw = False
 
             valid_keys = [ecodes.KEY_ESC]
             if len(networks) > (page + 1) * items_per_page: valid_keys.append(ecodes.KEY_PAGEDOWN)
@@ -480,8 +496,12 @@ class AdaWriter:
             choice = self.wait_for_direct_choice(valid_keys)
 
             if choice == ecodes.KEY_ESC: break
-            elif choice == ecodes.KEY_PAGEDOWN: page += 1
-            elif choice == ecodes.KEY_PAGEUP: page -= 1
+            elif choice == ecodes.KEY_PAGEDOWN:
+                page += 1
+                needs_redraw = True
+            elif choice == ecodes.KEY_PAGEUP:
+                page -= 1
+                needs_redraw = True
             elif choice in choice_map:
                 selected_net = page_networks[choice_map[choice]]
                 password = ""
@@ -495,6 +515,8 @@ class AdaWriter:
                         self._save_last_wifi_credentials(selected_net['ssid'], password)
                         self.last_wifi_creds = {'ssid': selected_net['ssid'], 'password': password}
                         break
+                else:
+                    needs_redraw = True
 
     def _get_active_indicator_text(self):
         """Returns the text for any active status indicator (word count, time, saved)."""
@@ -619,11 +641,16 @@ class TextEditor:
         self.display._draw_text_centered(draw, 20, editor_state['title'], self.display.fonts['heading'])
         
         y_pos = config.EDITOR_HEADER_HEIGHT
-        visible_lines = display_lines[editor_state['scroll_offset'] : editor_state['scroll_offset'] + max_lines_on_screen]
+        # Corrected to handle scroll offset properly
+        start_index = editor_state['scroll_offset']
+        end_index = editor_state['scroll_offset'] + max_lines_on_screen
+        visible_lines = display_lines[start_index:end_index]
         
         for i, line in enumerate(visible_lines):
             current_display_y = i + editor_state['scroll_offset']
-            draw.text((config.TEXT_MARGIN, y_pos), line, font=editor_font, fill=0)
+            # Only draw text if it's within the visible screen area
+            if y_pos < self.display.height - config.EDITOR_FOOTER_HEIGHT:
+                draw.text((config.TEXT_MARGIN, y_pos), line, font=editor_font, fill=0)
 
             if editor_state['cursor_visible'] and self.cursor_blink_on and current_display_y == cursor_display_y:
                 line_prefix = line[:cursor_display_x]
@@ -633,9 +660,11 @@ class TextEditor:
                     cursor_x_start = config.TEXT_MARGIN
                 
                 cursor_width = 8
-                cursor_y_pos = y_pos + line_height - 4
-                self.last_cursor_rect = [cursor_x_start, cursor_y_pos, cursor_x_start + cursor_width, cursor_y_pos + 1]
-                draw.rectangle(self.last_cursor_rect, fill=0)
+                # Ensure cursor is drawn within the visible area
+                if y_pos < self.display.height - config.EDITOR_FOOTER_HEIGHT:
+                    cursor_y_pos = y_pos + line_height - 4
+                    self.last_cursor_rect = [cursor_x_start, cursor_y_pos, cursor_x_start + cursor_width, cursor_y_pos + 1]
+                    draw.rectangle(self.last_cursor_rect, fill=0)
             y_pos += line_height
 
         indicator_text = self.app._get_active_indicator_text()
@@ -654,14 +683,14 @@ class TextEditor:
 
         if code in (ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT):
             self.keyboard.shift_pressed = (event.value != 0)
-            return False
+            return None
 
-        if event.value != 1: return False
+        if event.value != 1: return None
 
         editor_state['cursor_visible'] = True
         
         if code in (ecodes.KEY_UP, ecodes.KEY_DOWN, ecodes.KEY_LEFT, ecodes.KEY_RIGHT):
-            change_type = "content_update" # Cursor movement is a partial refresh
+            change_type = "partial" # Partial refresh for navigation
             if code == ecodes.KEY_UP:
                 if cursor_y > 0:
                     editor_state['cursor_y'] -= 1
@@ -683,26 +712,26 @@ class TextEditor:
                     editor_state['cursor_y'] += 1
                     editor_state['cursor_x'] = 0
         elif code == ecodes.KEY_ENTER:
-            change_type = "view_update" # New lines change layout, requires full refresh
+            change_type = "full"
             current_line = lines[cursor_y]
             lines[cursor_y] = current_line[:cursor_x]
             lines.insert(cursor_y + 1, current_line[cursor_x:])
             editor_state['cursor_y'] += 1
             editor_state['cursor_x'] = 0
         elif code == ecodes.KEY_BACKSPACE:
+            change_type = "partial"
             if cursor_x > 0:
-                change_type = "content_update" # Deleting a character is a partial refresh.
                 lines[cursor_y] = lines[cursor_y][:cursor_x - 1] + lines[cursor_y][cursor_x:]
                 editor_state['cursor_x'] -= 1
             elif cursor_y > 0:
-                change_type = "view_update" # Joining lines requires full refresh
                 original_line_content = lines.pop(cursor_y)
                 prev_line_len = len(lines[cursor_y - 1])
                 lines[cursor_y - 1] += original_line_content
                 editor_state['cursor_y'] -= 1
                 editor_state['cursor_x'] = prev_line_len
+                change_type = "full" # Merging lines requires full refresh
         elif code == ecodes.KEY_F1 or code == ecodes.KEY_F2:
-            change_type = "content_update"
+            change_type = "full"
             if code == ecodes.KEY_F1:
                 word_count = len("\n".join(lines).split())
                 self.app.current_word_count_text = f"Words: {word_count}"
@@ -713,26 +742,10 @@ class TextEditor:
         else:
             char_to_add = self.app._get_char_from_event(code)
             if char_to_add:
-                change_type = "content_update" # Typing is a partial refresh
+                change_type = "partial"
                 lines[cursor_y] = lines[cursor_y][:cursor_x] + char_to_add + lines[cursor_y][cursor_x:]
                 editor_state['cursor_x'] += len(char_to_add)
 
-        # Check for auto-wrapping, which forces a full refresh
-        # This is the key fix: Only trigger a view_update (full refresh) when a word wrap actually occurs.
-        # We detect this by seeing if the number of display lines for the current source line has increased.
-        if change_type == "content_update" and event.code != ecodes.KEY_SPACE:
-            font = self.display.fonts['editor']
-            max_width = self.display.width - (2 * config.TEXT_MARGIN)
-            current_line_text = lines[cursor_y]
-            
-            # Check how many display lines the current source line currently takes up
-            temp_display_lines, _ = self._get_wrapped_lines([current_line_text])
-            num_display_lines_before = len(temp_display_lines)
-
-            if num_display_lines_before > 1: # Already wrapped, no need to check again
-                pass
-            elif font.getbbox(current_line_text)[2] > max_width:
-                change_type = "view_update" # The line has just become long enough to wrap
         return change_type
     
     def _calculate_cursor_on_display(self, display_lines, source_line_map, source_cursor_y, source_cursor_x):
@@ -740,23 +753,20 @@ class TextEditor:
         if not display_lines or not (0 <= source_cursor_y < len(source_line_map)):
             return 0, 0
 
-        # Find the first display line that corresponds to our source line
         try:
             first_display_line_index = source_line_map.index(source_cursor_y)
         except ValueError:
-            return 0, 0 # Source line not found in map, should not happen
+            return 0, 0
 
         char_offset = 0
         for display_y in range(first_display_line_index, len(display_lines)):
-            # Stop if we've moved to the next source line
             if source_line_map[display_y] != source_cursor_y:
-                # This happens if cursor is at the very end of the last wrapped line
                 prev_line_y = display_y - 1
                 prev_line_x = len(display_lines[prev_line_y])
                 return prev_line_y, prev_line_x
 
             current_display_line = display_lines[display_y]
-            line_len_with_space = len(current_display_line) + 1 # +1 for the implicit space
+            line_len_with_space = len(current_display_line) + 1
 
             if source_cursor_x <= char_offset + len(current_display_line):
                 display_x = source_cursor_x - char_offset
@@ -764,7 +774,6 @@ class TextEditor:
             
             char_offset += line_len_with_space
         
-        # If cursor is beyond all text, place it at the end of the last segment
         last_line_y = len(display_lines) - 1
         last_line_x = len(display_lines[last_line_y])
         return last_line_y, last_line_x
@@ -778,9 +787,9 @@ class TextEditor:
             if is_journal:
                 current_time = datetime.now().strftime("%I:%M%p").lower()
                 if not lines or not lines[-1].startswith("---"):
-                    lines.append("") # Blank line before separator
+                    lines.append("")
                     lines.append(f"--- {current_time} ---")
-                    lines.append("") # Blank line after separator to start typing on
+                    lines.append("")
             cursor_y = len(lines) - 1
             cursor_x = len(lines[cursor_y])
         except (IOError, FileNotFoundError):
@@ -789,30 +798,35 @@ class TextEditor:
             cursor_y = len(lines) - 1
             cursor_x = 0
 
+        self._main_loop(file_path, lines, cursor_x, cursor_y, editor_title, is_journal)
+
+    def _main_loop(self, file_path, lines, cursor_x, cursor_y, editor_title, is_journal):
+        """Main loop for the text editor."""
+        # Calculate initial scroll position to place cursor in the middle of the screen
         display_lines, source_line_map = self._get_wrapped_lines(lines)
+        initial_cursor_display_y, _ = self._calculate_cursor_on_display(display_lines, source_line_map, cursor_y, cursor_x)
         
-        cursor_display_y, _ = self._calculate_cursor_on_display(display_lines, source_line_map, cursor_y, cursor_x)
-        
-        # Set the initial scroll so the cursor's line is at the top of the view.
-        initial_scroll_offset = cursor_display_y
+        editor_font = self.display.fonts['editor']
+        line_bbox = editor_font.getbbox("Tg")
+        line_height = (line_bbox[3] - line_bbox[1]) + 4
+        max_lines_on_screen = (self.display.height - config.EDITOR_HEADER_HEIGHT - config.EDITOR_FOOTER_HEIGHT) // line_height
+        scroll_offset = max(0, initial_cursor_display_y - (max_lines_on_screen // 2))
 
-        self._main_loop(file_path, lines, cursor_x, cursor_y, editor_title, is_journal, initial_scroll_offset)
-
-    def _main_loop(self, file_path, lines, cursor_x, cursor_y, editor_title, is_journal, initial_scroll_offset=0): # V3.5
-        """A robust, simplified main loop for the text editor."""
         editor_state = {
-            'lines': lines, 'cursor_x': cursor_x, 'cursor_y': cursor_y, 'scroll_offset': initial_scroll_offset, 
+            'lines': lines, 'cursor_x': cursor_x, 'cursor_y': cursor_y, 'scroll_offset': scroll_offset, 
             'title': editor_title, 'is_journal': is_journal, 'cursor_visible': True
         }
-        draw = self.display.draw # Use the persistent draw object
+        draw = self.display.draw
         
-        change_type = "view_update" # Force a full refresh on first entry
         content_changed_since_last_save = False
-        needs_refresh = True
         self.keyboard.shift_pressed = False
         self.last_activity_time = time.time()
         self.last_blink_time = pygame.time.get_ticks()
         self.cursor_blink_on = True
+
+        # -- Refresh flags --
+        needs_update = True
+        force_full_refresh = True # Always do a full refresh on initial draw
 
         while True:
             # 1. Handle Input and Timed Events
@@ -826,60 +840,63 @@ class TextEditor:
                         if content_changed_since_last_save:
                             with open(file_path, 'w', encoding='utf-8') as f:
                                 f.write('\n'.join(editor_state['lines']) + '\n')
-                            self.app.show_message("Saved!", duration_sec=1, full_refresh=True)
+                            self.app.save_indicator_active, self.app.save_indicator_timer = True, pygame.time.get_ticks()
                         if is_journal: self.app._update_monthly_journal(file_path)
-                        # On exit, always do a full refresh to clear the screen for the main menu.
                         self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
                         self.display.display_image(is_full_refresh=True)
                         return
 
-                    input_update_type = self._handle_editor_input(event, editor_state)
-                    if input_update_type:
+                    update_type = self._handle_editor_input(event, editor_state)
+                    if update_type:
                         self.last_activity_time = time.time()
                         self.cursor_blink_on = True
                         self.last_blink_time = pygame.time.get_ticks()
                         content_changed_since_last_save = True
-                        update_type = input_update_type
+                        needs_update = True
+                        if update_type == "full":
+                            force_full_refresh = True
             else:
                 current_time_ms = pygame.time.get_ticks()
                 if editor_state['cursor_visible'] and (current_time_ms - self.last_blink_time > self.BLINK_INTERVAL_MS):
                     self.cursor_blink_on = not self.cursor_blink_on
                     self.last_blink_time = current_time_ms
-                    update_type = "content_update" # A blink is a partial refresh
+                    needs_update = True
                 elif self.app._update_editor_indicators():
-                    update_type = "view_update" # Header changes need a full refresh
+                    needs_update = True
                 elif content_changed_since_last_save and (time.time() - self.last_activity_time > (config.INACTIVITY_SAVE_TIMEOUT / 1000)):
                     with open(file_path, 'w', encoding='utf-8') as f: f.write("\n".join(editor_state['lines']) + '\n')
                     self.app.save_indicator_active, self.app.save_indicator_timer = True, pygame.time.get_ticks()
                     content_changed_since_last_save = False
-                    update_type = "content_update"
+                    needs_update = True
+                    force_full_refresh = True # Show 'Saved' message clearly
 
-            # On first run, force a full view update.
-            if change_type:
-                update_type = change_type
-                change_type = None
-
-            # 2. If anything changed, update the screen.
-            if update_type:
-                # 2a. Always recalculate view state
-                old_scroll_offset = editor_state['scroll_offset']
+            if needs_update:
                 display_lines, source_line_map = self._get_wrapped_lines(editor_state['lines'])
                 cursor_display_pos = self._calculate_cursor_on_display(display_lines, source_line_map, editor_state['cursor_y'], editor_state['cursor_x'])
-                
-                # 2b. Check for scrolling ("paging" style)
-                line_height = (self.display.fonts['editor'].getbbox("Tg")[3] - self.display.fonts['editor'].getbbox("Tg")[1]) + 4
-                max_display_lines = (self.display.height - config.EDITOR_HEADER_HEIGHT - config.EDITOR_FOOTER_HEIGHT) // line_height
-                if cursor_display_pos[0] >= old_scroll_offset + max_display_lines:
-                    editor_state['scroll_offset'] = cursor_display_pos[0]
-                if editor_state['scroll_offset'] != old_scroll_offset:
-                    update_type = "view_update" # Scrolling always forces a full refresh
+                cursor_display_y = cursor_display_pos[0]
 
-                # 2c. Draw the UI
+                # Scrolling logic
+                scroll_offset = editor_state['scroll_offset']
+                if cursor_display_y < scroll_offset:
+                    scroll_offset = cursor_display_y
+                if cursor_display_y >= scroll_offset + max_lines_on_screen:
+                    scroll_offset = cursor_display_y - max_lines_on_screen + 1
+                editor_state['scroll_offset'] = scroll_offset
+
                 draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
                 self._draw_editor_ui(draw, editor_state, display_lines, cursor_display_pos)
                 
-                # 2d. Display with the correct refresh type
-                self.display.display_image(is_full_refresh=(update_type == "view_update"))
+                is_full = False
+                if force_full_refresh or self.partial_refresh_count >= self.FULL_REFRESH_INTERVAL:
+                    is_full = True
+                    self.partial_refresh_count = 0
+                else:
+                    self.partial_refresh_count += 1
+                
+                self.display.display_image(is_full_refresh=is_full)
+                
+                needs_update = False
+                force_full_refresh = False
 
 # --- MAIN EXECUTION ---
 if __name__ == '__main__':
