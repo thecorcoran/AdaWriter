@@ -17,8 +17,8 @@ AdaWriter is a minimalist, distraction-free writing device powered by a Raspberr
 *   **Wi-Fi Connectivity**:
     *   Connect to new Wi-Fi networks directly from the device.
     *   **Web Interface**: Access a full-featured web server from another computer on the same network to:
-        *   Download files as `.txt` or `.docx`.
-        *   Upload `.txt` files from your computer to the device.
+        *   Download project files as `.txt` or `.docx`.
+        *   Upload `.txt` and `.docx` files from your computer to the device.
         *   Edit files directly in the browser.
         *   Archive, delete, and restore files from a trash folder.
 *   **Portable and Low-Power**: Designed to be used anywhere.
@@ -31,13 +31,42 @@ AdaWriter is a minimalist, distraction-free writing device powered by a Raspberr
 *   A power source (e.g., a power bank).
 *   An SD card for the OS and project files.
 
+## Keyboard Layout
+
+The keyboard layout is defined in `us_qwerty.json`. This file maps the `evdev` key codes from a standard US QWERTY keyboard to their corresponding characters, including shifted values.
+
+If you are using a different keyboard layout, you can create a new JSON file and modify the `Keyboard` class in `keyboard.py` to load it.
+
+
 ## Setup and Installation
 
-These instructions assume you are starting with a fresh installation of Raspberry Pi OS Lite.
+There are two primary methods for setting up an AdaWriter device: the automated method (recommended) and the manual method.
 
-### 1. System Configuration
+### Automated Setup (Recommended)
 
-First, enable the SPI interface, which is required for the e-paper display.
+This method uses a provisioning script to automate all the necessary installation steps. It is the fastest and most reliable way to set up a new device.
+
+1.  **Flash OS**: Flash a new SD card with the latest Raspberry Pi OS Lite.
+2.  **Boot and Connect**: Boot the Raspberry Pi and ensure it is connected to the internet.
+3.  **Clone Repository**:
+    ```bash
+    git clone https://github.com/thecorcoran/AdaWriter.git
+    cd AdaWriter
+    ```
+4.  **Run Provisioning Script**: Make the script executable and run it.
+    ```bash
+    chmod +x provision.sh
+    ./provision.sh
+    ```
+The script will handle system updates, dependency installation, SPI activation, and Python environment setup.
+
+### Manual Setup
+
+Follow these steps if you prefer to set up the device manually.
+
+#### 1. System Configuration
+
+Enable the SPI interface, which is required for the e-paper display.
 
 ```bash
 sudo raspi-config
@@ -47,10 +76,9 @@ Navigate to `3 Interface Options` -> `I4 SPI` and select `<Yes>` to enable it.
 ### 2. Install System Dependencies
 
 Install the necessary system libraries and tools.
-`python-docx` requires the following libraries for XML processing.
 ```bash
 sudo apt-get update
-sudo apt-get install -y git python3-pip python3-pil python3-numpy libxml2-dev libxslt1-dev
+sudo apt-get install -y git python3-pip python3-pil python3-numpy libxml2-dev libxslt1-dev python3-venv
 ```
 
 ### 3. Install E-Paper Driver
