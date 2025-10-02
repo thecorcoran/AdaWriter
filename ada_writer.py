@@ -269,6 +269,8 @@ class AdaWriter:
                 if files:
                     self.rename_project_ui(os.path.join(self.projects_dir, files[selected_index]))
                     return self.show_projects_list()
+                    # After renaming, we need to reload files and redraw the list.
+                    return self.show_projects_list() # This re-runs the function from scratch.
             elif choice == ecodes.KEY_DELETE:
                 if files:
                     if self.confirm_action(f"Delete '{os.path.splitext(files[selected_index])[0]}'?"):
@@ -277,11 +279,12 @@ class AdaWriter:
                         return self.show_projects_list()
                     else:
                         needs_redraw = True
+                        needs_redraw = True # Just redraw if deletion is cancelled.
             elif choice == ecodes.KEY_ENTER:
                 if files:
                     filepath = os.path.join(self.projects_dir, files[selected_index])
-                    self.edit_project(file_path=filepath, editor_title=os.path.splitext(os.path.basename(filepath))[0])
-                    return
+                    self.edit_project(file_path=filepath, editor_title=os.path.splitext(os.path.basename(filepath))[0]) # This was already fixed, but keeping for context
+                    needs_redraw = True # Redraw after returning from editor
 
     def create_new_project(self):
         """Handles the UI for creating a new project file."""
@@ -391,62 +394,73 @@ class AdaWriter:
         self.wait_for_direct_choice([ecodes.KEY_ESC])
 
     def _text_input_loop(self, prompt, initial_text="", is_password=False):
-        """A generic UI loop for getting a line of text from the user."""
+        """A robust UI loop for getting a line of text from the user."""
         text = initial_text
         self.keyboard.shift_pressed = False
-
-        # Initial full draw
+        cursor_blink_on = True
+        last_blink_time = pygame.time.get_ticks()
+        
+        # Initial full draw of the static elements
         draw = self.display.draw
         draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
         self.display._draw_wrapped_text(30, prompt, self.display.fonts['heading'], config.TEXT_MARGIN)
         self.display._draw_text_centered(draw, self.display.height - 40, "Enter=Done, ESC=Cancel", self.display.fonts['footer'])
         self.display.display_image(is_full_refresh=True)
 
-        while True:
-            # Partial refresh for the text area
-            text_area_rect = (config.TEXT_MARGIN, 80, self.display.width - config.TEXT_MARGIN, 150)
-            draw.rectangle(text_area_rect, fill=255) # Clear the text area
+        text_area_rect = (0, 80, self.display.width, 150)
 
+        while True:
+            current_time_ms = pygame.time.get_ticks()
+            if current_time_ms - last_blink_time > 800: # Blink interval
+                cursor_blink_on = not cursor_blink_on
+                last_blink_time = current_time_ms
+
+            # Redraw the dynamic text area for each frame
+            draw.rectangle(text_area_rect, fill=255) # Clear the text area
             display_text = "*" * len(text) if is_password else text
             prompt_prefix = "> "
             draw.text((config.TEXT_MARGIN, 100), f"{prompt_prefix}{display_text}", font=self.display.fonts['editor'], fill=0)
             
-            prefix_width = self.display.fonts['editor'].getbbox(prompt_prefix)[2]
-            cursor_x_start = config.TEXT_MARGIN + prefix_width + self.display.fonts['editor'].getbbox(display_text)[2]
-            cursor_y_start = 100
-            draw.rectangle([cursor_x_start, cursor_y_start, cursor_x_start + 10, cursor_y_start + 20], fill=0)
+            if cursor_blink_on:
+                prefix_width = self.display.fonts['editor'].getbbox(prompt_prefix)[2]
+                cursor_x_start = config.TEXT_MARGIN + prefix_width + self.display.fonts['editor'].getbbox(display_text)[2]
+                cursor_y_start = 100
+                draw.rectangle([cursor_x_start, cursor_y_start, cursor_x_start + 10, cursor_y_start + 20], fill=0)
             
             self.display.display_partial(self.display.image, text_area_rect)
+            self.display.display_image(is_full_refresh=False)
 
-            event = self._wait_for_key_press()
-            if event is None: continue
-            
-            self.last_activity = time.time()
-            code = event.code
-            
-            if code in (ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT):
-                self.keyboard.shift_pressed = (event.value != 0)
-                continue
-            
-            if event.value != 1: continue
+            # Non-blocking event check
+            if self.keyboard.has_input(0.05):
+                for event in self.keyboard.read_events():
+                    if event.type != ecodes.EV_KEY: continue
+                    
+                    self.last_activity = time.time()
+                    code = event.code
 
-            if code == ecodes.KEY_ENTER: return text
-            elif code == ecodes.KEY_ESC: return None
-            elif code == ecodes.KEY_BACKSPACE:
-                if len(text) > 0: text = text[:-1]
-            else:
-                char_to_add = self._get_char_from_event(code)
-                if char_to_add: 
-                    text += char_to_add
+                    if code in (ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT):
+                        self.keyboard.shift_pressed = (event.value != 0)
+                        continue
+                    
+                    if event.value != 1: continue # Only handle key presses
+
+                    if code == ecodes.KEY_ENTER: return text
+                    elif code == ecodes.KEY_ESC: return None
+                    elif code == ecodes.KEY_BACKSPACE:
+                        if len(text) > 0: text = text[:-1]
+                    else:
+                        char_to_add = self._get_char_from_event(code)
+                        if char_to_add: text += char_to_add
 
     def _wait_for_key_press(self, timeout=0.1):
         """Waits for and returns a single key press event."""
-        while True:
-            if self.keyboard.has_input(timeout):
-                for event in self.keyboard.read_events():
-                    if event.type == ecodes.EV_KEY:
-                        return event
-            return None # Timeout or no event
+        # This loop is problematic for text input as it can miss events.
+        # The text input loop should read events directly.
+        if self.keyboard.has_input(timeout):
+            for event in self.keyboard.read_events():
+                if event.type == ecodes.EV_KEY:
+                    return event
+        return None # Timeout or no event
 
     def _get_char_from_event(self, code):
         """Helper to get a character from a keyboard event code, respecting shift state."""
@@ -695,8 +709,8 @@ class TextEditor:
                 editor_state['cursor_y'] -= 1
                 editor_state['cursor_x'] = prev_line_len
                 editor_state['layout_changed'] = True
-        elif code == ecodes.KEY_F1 or code == ecodes.KEY_F2:
-            editor_state['layout_changed'] = True # Force redraw for status indicators
+        elif code == ecodes.KEY_F1 or code == ecodes.KEY_F2: # This was the previous fix, now we adjust the main loop
+            editor_state['timers_changed'] = True # Force header/footer redraw for status indicators
             if code == ecodes.KEY_F1:
                 word_count = len("\n".join(lines).split())
                 self.app.current_word_count_text = f"Words: {word_count}"
@@ -834,7 +848,8 @@ class TextEditor:
                 editor_state['timers_changed'] = True
             
             # --- Rendering Logic ---
-            is_full_refresh_needed = editor_state['layout_changed'] or editor_state['timers_changed'] or self.partial_refresh_count >= self.FULL_REFRESH_INTERVAL
+            # A timer change (like F1/F2) should not force a full refresh on its own.
+            is_full_refresh_needed = editor_state['layout_changed'] or self.partial_refresh_count >= self.FULL_REFRESH_INTERVAL
             is_partial_refresh_needed = editor_state['content_changed']
 
             if is_full_refresh_needed or is_partial_refresh_needed:
@@ -847,13 +862,14 @@ class TextEditor:
                 if cursor_display_pos[0] >= editor_state['scroll_offset'] + max_lines_on_screen:
                     editor_state['scroll_offset'] = cursor_display_pos[0] - max_lines_on_screen + 1
 
-                if is_full_refresh_needed:
+                # If timers changed, we need to redraw the whole screen, but a partial refresh is sufficient.
+                if is_full_refresh_needed or editor_state['timers_changed']:
                     logger.debug("Performing full refresh.")
                     self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
                     self.renderer.draw_ui(self.display.draw, editor_state, display_lines, cursor_display_pos, self.cursor_blink_on)
-                    self.display.display_image(is_full_refresh=True)
+                    self.display.display_image(is_full_refresh=is_full_refresh_needed)
                     self.partial_refresh_count = 0
-                else: # Partial refresh
+                elif is_partial_refresh_needed: # Partial refresh for content changes only
                     logger.debug("Performing partial refresh.")
                     editor_area = (0, config.EDITOR_HEADER_HEIGHT, self.display.width, self.display.height - config.EDITOR_FOOTER_HEIGHT)
                     self.display.draw.rectangle(editor_area, fill=255)
@@ -895,4 +911,4 @@ if __name__ == '__main__':
     finally:
         logger.info("AdaWriter shutting down.")
         pygame.quit()
-        sys.exit(0)
+        sys.exit(0)os
