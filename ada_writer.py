@@ -1,4 +1,4 @@
-# ada_writer.py (Version 3.5 - Editor Refresh & Logic Fix)
+# ada_writer.py (Version 3.6 - Editor Refactoring)
 import os
 os.environ['SDL_VIDEODRIVER'] = 'dummy'
 os.environ['SDL_AUDIODRIVER'] = 'dummy'
@@ -19,6 +19,7 @@ from keyboard import Keyboard
 from logger import setup_logger
 from web_server import create_web_app
 from display_manager import DisplayManager
+from editor_renderer import EditorRenderer # New import
 import wifi_manager
 
 pygame.init()
@@ -274,6 +275,8 @@ class AdaWriter:
                         os.remove(os.path.join(self.projects_dir, files[selected_index]))
                         self.show_message("Deleted.", duration_sec=2)
                         return self.show_projects_list()
+                    else:
+                        needs_redraw = True
             elif choice == ecodes.KEY_ENTER:
                 if files:
                     filepath = os.path.join(self.projects_dir, files[selected_index])
@@ -392,12 +395,19 @@ class AdaWriter:
         text = initial_text
         self.keyboard.shift_pressed = False
 
+        # Initial full draw
+        draw = self.display.draw
+        draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
+        self.display._draw_wrapped_text(30, prompt, self.display.fonts['heading'], config.TEXT_MARGIN)
+        self.display._draw_text_centered(draw, self.display.height - 40, "Enter=Done, ESC=Cancel", self.display.fonts['footer'])
+        self.display.display_image(is_full_refresh=True)
+
         while True:
-            draw = self.display.draw
-            draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-            self.display._draw_wrapped_text(30, prompt, self.display.fonts['heading'], config.TEXT_MARGIN)
+            # Partial refresh for the text area
+            text_area_rect = (config.TEXT_MARGIN, 80, self.display.width - config.TEXT_MARGIN, 150)
+            draw.rectangle(text_area_rect, fill=255) # Clear the text area
+
             display_text = "*" * len(text) if is_password else text
-            
             prompt_prefix = "> "
             draw.text((config.TEXT_MARGIN, 100), f"{prompt_prefix}{display_text}", font=self.display.fonts['editor'], fill=0)
             
@@ -405,8 +415,8 @@ class AdaWriter:
             cursor_x_start = config.TEXT_MARGIN + prefix_width + self.display.fonts['editor'].getbbox(display_text)[2]
             cursor_y_start = 100
             draw.rectangle([cursor_x_start, cursor_y_start, cursor_x_start + 10, cursor_y_start + 20], fill=0)
-            self.display._draw_text_centered(draw, self.display.height - 40, "Enter=Done, ESC=Cancel", self.display.fonts['footer'])
-            self.display.display_image(is_full_refresh=True)
+            
+            self.display.display_partial(self.display.image, text_area_rect)
 
             event = self._wait_for_key_press()
             if event is None: continue
@@ -592,9 +602,10 @@ class TextEditor:
         self.display = display_manager
         self.keyboard = keyboard
         self.app = app_controller
+        self.renderer = EditorRenderer(display_manager, app_controller) # New
+        
         self.last_activity_time = 0
         self.cursor_inactivity_timeout = 5 # seconds
-        self.last_cursor_rect = None
         self.cursor_blink_on = True
         self.last_blink_time = 0
         self.BLINK_INTERVAL_MS = 800
@@ -631,66 +642,21 @@ class TextEditor:
             source_line_map.append(i)
         return display_lines, source_line_map
 
-    def _draw_editor_ui(self, draw, editor_state, display_lines, cursor_display_pos):
-        cursor_display_y, cursor_display_x = cursor_display_pos
-        editor_font = self.display.fonts['editor']
-        line_bbox = editor_font.getbbox("Tg")
-        line_height = (line_bbox[3] - line_bbox[1]) + 4
-        max_lines_on_screen = (self.display.height - config.EDITOR_HEADER_HEIGHT - config.EDITOR_FOOTER_HEIGHT) // line_height
-        
-        self.display._draw_text_centered(draw, 20, editor_state['title'], self.display.fonts['heading'])
-        
-        y_pos = config.EDITOR_HEADER_HEIGHT
-        # Corrected to handle scroll offset properly
-        start_index = editor_state['scroll_offset']
-        end_index = editor_state['scroll_offset'] + max_lines_on_screen
-        visible_lines = display_lines[start_index:end_index]
-        
-        for i, line in enumerate(visible_lines):
-            current_display_y = i + editor_state['scroll_offset']
-            # Only draw text if it's within the visible screen area
-            if y_pos < self.display.height - config.EDITOR_FOOTER_HEIGHT:
-                draw.text((config.TEXT_MARGIN, y_pos), line, font=editor_font, fill=0)
-
-            if editor_state['cursor_visible'] and self.cursor_blink_on and current_display_y == cursor_display_y:
-                line_prefix = line[:cursor_display_x]
-                if line_prefix:
-                    cursor_x_start = config.TEXT_MARGIN + editor_font.getbbox(line_prefix)[2]
-                else:
-                    cursor_x_start = config.TEXT_MARGIN
-                
-                cursor_width = 8
-                # Ensure cursor is drawn within the visible area
-                if y_pos < self.display.height - config.EDITOR_FOOTER_HEIGHT:
-                    cursor_y_pos = y_pos + line_height - 4
-                    self.last_cursor_rect = [cursor_x_start, cursor_y_pos, cursor_x_start + cursor_width, cursor_y_pos + 1]
-                    draw.rectangle(self.last_cursor_rect, fill=0)
-            y_pos += line_height
-
-        indicator_text = self.app._get_active_indicator_text()
-        if indicator_text:
-            bbox = self.display.fonts['status'].getbbox(indicator_text)
-            text_w = bbox[2] - bbox[0]
-            draw.text((self.display.width - config.TEXT_MARGIN - text_w, 10), indicator_text, font=self.display.fonts['status'], fill=0)
-        
-        self.display._draw_text_centered(draw, self.display.height - 25, "Arrows=Move, ESC=Save & Exit, F1=Words, F2=Time", self.display.fonts['footer'])
-        
     def _handle_editor_input(self, event, editor_state):
-        """Processes keyboard input and modifies editor state. Returns the type of change."""
+        """Processes keyboard input and modifies editor state. Returns True if the layout might have changed."""
         lines, cursor_x, cursor_y = editor_state['lines'], editor_state['cursor_x'], editor_state['cursor_y']
         code = event.code
-        change_type = None
-
+        
         if code in (ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT):
             self.keyboard.shift_pressed = (event.value != 0)
-            return None
+            return
 
-        if event.value != 1: return None
+        if event.value != 1: return
 
         editor_state['cursor_visible'] = True
+        editor_state['content_changed'] = True
         
         if code in (ecodes.KEY_UP, ecodes.KEY_DOWN, ecodes.KEY_LEFT, ecodes.KEY_RIGHT):
-            change_type = "partial" # Partial refresh for navigation
             if code == ecodes.KEY_UP:
                 if cursor_y > 0:
                     editor_state['cursor_y'] -= 1
@@ -712,14 +678,13 @@ class TextEditor:
                     editor_state['cursor_y'] += 1
                     editor_state['cursor_x'] = 0
         elif code == ecodes.KEY_ENTER:
-            change_type = "full"
+            editor_state['layout_changed'] = True
             current_line = lines[cursor_y]
             lines[cursor_y] = current_line[:cursor_x]
             lines.insert(cursor_y + 1, current_line[cursor_x:])
             editor_state['cursor_y'] += 1
             editor_state['cursor_x'] = 0
         elif code == ecodes.KEY_BACKSPACE:
-            change_type = "partial"
             if cursor_x > 0:
                 lines[cursor_y] = lines[cursor_y][:cursor_x - 1] + lines[cursor_y][cursor_x:]
                 editor_state['cursor_x'] -= 1
@@ -729,9 +694,9 @@ class TextEditor:
                 lines[cursor_y - 1] += original_line_content
                 editor_state['cursor_y'] -= 1
                 editor_state['cursor_x'] = prev_line_len
-                change_type = "full" # Merging lines requires full refresh
+                editor_state['layout_changed'] = True
         elif code == ecodes.KEY_F1 or code == ecodes.KEY_F2:
-            change_type = "full"
+            editor_state['layout_changed'] = True # Force redraw for status indicators
             if code == ecodes.KEY_F1:
                 word_count = len("\n".join(lines).split())
                 self.app.current_word_count_text = f"Words: {word_count}"
@@ -742,12 +707,9 @@ class TextEditor:
         else:
             char_to_add = self.app._get_char_from_event(code)
             if char_to_add:
-                change_type = "partial"
                 lines[cursor_y] = lines[cursor_y][:cursor_x] + char_to_add + lines[cursor_y][cursor_x:]
                 editor_state['cursor_x'] += len(char_to_add)
 
-        return change_type
-    
     def _calculate_cursor_on_display(self, display_lines, source_line_map, source_cursor_y, source_cursor_x):
         """Calculates the cursor's (y, x) position on the wrapped display lines."""
         if not display_lines or not (0 <= source_cursor_y < len(source_line_map)):
@@ -779,7 +741,7 @@ class TextEditor:
         return last_line_y, last_line_x
 
     def run(self, file_path, editor_title="Editor", is_journal=False):
-        """Prepares and launches the main text editor loop."""
+        """Prepares and launches the main text editor loop with improved refresh logic."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 initial_content = f.read()
@@ -795,111 +757,125 @@ class TextEditor:
         except (IOError, FileNotFoundError):
             logger.warning(f"File {file_path} not found, will create on save.")
             lines = [""]
-            cursor_y = len(lines) - 1
+            cursor_y = 0
             cursor_x = 0
 
         self._main_loop(file_path, lines, cursor_x, cursor_y, editor_title, is_journal)
 
     def _main_loop(self, file_path, lines, cursor_x, cursor_y, editor_title, is_journal):
-        """Main loop for the text editor."""
-        # Calculate initial scroll position to place cursor in the middle of the screen
+        """Main loop for the text editor with optimized partial refresh."""
+        editor_font = self.display.fonts['editor']
+        line_height = (editor_font.getbbox("Tg")[3] - editor_font.getbbox("Tg")[1]) + 4
+        max_lines_on_screen = (self.display.height - config.EDITOR_HEADER_HEIGHT - config.EDITOR_FOOTER_HEIGHT) // line_height
+
         display_lines, source_line_map = self._get_wrapped_lines(lines)
         initial_cursor_display_y, _ = self._calculate_cursor_on_display(display_lines, source_line_map, cursor_y, cursor_x)
-        
-        editor_font = self.display.fonts['editor']
-        line_bbox = editor_font.getbbox("Tg")
-        line_height = (line_bbox[3] - line_bbox[1]) + 4
-        max_lines_on_screen = (self.display.height - config.EDITOR_HEADER_HEIGHT - config.EDITOR_FOOTER_HEIGHT) // line_height
         scroll_offset = max(0, initial_cursor_display_y - (max_lines_on_screen // 2))
 
         editor_state = {
-            'lines': lines, 'cursor_x': cursor_x, 'cursor_y': cursor_y, 'scroll_offset': scroll_offset, 
-            'title': editor_title, 'is_journal': is_journal, 'cursor_visible': True
+            'lines': lines, 'cursor_x': cursor_x, 'cursor_y': cursor_y, 'scroll_offset': scroll_offset,
+            'title': editor_title, 'is_journal': is_journal, 'cursor_visible': True,
+            'layout_changed': False, 'content_changed': False, 'timers_changed': False
         }
-        draw = self.display.draw
-        
-        content_changed_since_last_save = False
+
         self.keyboard.shift_pressed = False
         self.last_activity_time = time.time()
         self.last_blink_time = pygame.time.get_ticks()
         self.cursor_blink_on = True
+        self.partial_refresh_count = 0
 
-        # -- Refresh flags --
-        needs_update = True
-        force_full_refresh = True # Always do a full refresh on initial draw
+        # Initial full draw
+        self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
+        cursor_display_pos = self._calculate_cursor_on_display(display_lines, source_line_map, editor_state['cursor_y'], editor_state['cursor_x'])
+        self.renderer.draw_ui(self.display.draw, editor_state, display_lines, cursor_display_pos, self.cursor_blink_on)
+        self.display.display_image(is_full_refresh=True)
+        self.partial_refresh_count = 0
+        content_changed_since_last_save = False
 
         while True:
-            # 1. Handle Input and Timed Events
-            update_type = None
+            # --- Event Handling ---
             if self.keyboard.has_input(0.05):
                 for event in self.keyboard.read_events():
                     if event.type != ecodes.EV_KEY: continue
                     self.app.last_activity = time.time()
-                    
+                    self.last_activity_time = time.time()
+                    self.cursor_blink_on = True
+                    self.last_blink_time = pygame.time.get_ticks()
+                    content_changed_since_last_save = True
+
                     if event.code == ecodes.KEY_ESC and event.value == 1:
                         if content_changed_since_last_save:
-                            with open(file_path, 'w', encoding='utf-8') as f:
-                                f.write('\n'.join(editor_state['lines']) + '\n')
+                            with open(file_path, 'w', encoding='utf-8') as f: f.write('\n'.join(editor_state['lines']) + '\n')
                             self.app.save_indicator_active, self.app.save_indicator_timer = True, pygame.time.get_ticks()
                         if is_journal: self.app._update_monthly_journal(file_path)
-                        self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-                        self.display.display_image(is_full_refresh=True)
-                        return
+                        return # Exit editor
 
-                    update_type = self._handle_editor_input(event, editor_state)
-                    if update_type:
-                        self.last_activity_time = time.time()
-                        self.cursor_blink_on = True
-                        self.last_blink_time = pygame.time.get_ticks()
-                        content_changed_since_last_save = True
-                        needs_update = True
-                        if update_type == "full":
-                            force_full_refresh = True
-            else:
-                current_time_ms = pygame.time.get_ticks()
-                if editor_state['cursor_visible'] and (current_time_ms - self.last_blink_time > self.BLINK_INTERVAL_MS):
-                    self.cursor_blink_on = not self.cursor_blink_on
-                    self.last_blink_time = current_time_ms
-                    needs_update = True
-                elif self.app._update_editor_indicators():
-                    needs_update = True
-                elif content_changed_since_last_save and (time.time() - self.last_activity_time > (config.INACTIVITY_SAVE_TIMEOUT / 1000)):
-                    with open(file_path, 'w', encoding='utf-8') as f: f.write("\n".join(editor_state['lines']) + '\n')
-                    self.app.save_indicator_active, self.app.save_indicator_timer = True, pygame.time.get_ticks()
-                    content_changed_since_last_save = False
-                    needs_update = True
-                    force_full_refresh = True # Show 'Saved' message clearly
+                    self._handle_editor_input(event, editor_state)
+            
+            # --- State Updates from Timers ---
+            current_time_ms = pygame.time.get_ticks()
+            if time.time() - self.last_activity_time > self.cursor_inactivity_timeout:
+                if editor_state['cursor_visible']:
+                    editor_state['cursor_visible'] = False
+                    editor_state['content_changed'] = True
 
-            if needs_update:
+            if editor_state['cursor_visible'] and (current_time_ms - self.last_blink_time > self.BLINK_INTERVAL_MS):
+                self.cursor_blink_on = not self.cursor_blink_on
+                self.last_blink_time = current_time_ms
+                editor_state['content_changed'] = True
+
+            if self.app._update_editor_indicators():
+                editor_state['timers_changed'] = True
+
+            if content_changed_since_last_save and (time.time() - self.last_activity_time > (config.INACTIVITY_SAVE_TIMEOUT / 1000)):
+                with open(file_path, 'w', encoding='utf-8') as f: f.write("\n".join(editor_state['lines']) + '\n')
+                self.app.save_indicator_active, self.app.save_indicator_timer = True, pygame.time.get_ticks()
+                content_changed_since_last_save = False
+                editor_state['timers_changed'] = True
+            
+            # --- Rendering Logic ---
+            is_full_refresh_needed = editor_state['layout_changed'] or editor_state['timers_changed'] or self.partial_refresh_count >= self.FULL_REFRESH_INTERVAL
+            is_partial_refresh_needed = editor_state['content_changed']
+
+            if is_full_refresh_needed or is_partial_refresh_needed:
                 display_lines, source_line_map = self._get_wrapped_lines(editor_state['lines'])
                 cursor_display_pos = self._calculate_cursor_on_display(display_lines, source_line_map, editor_state['cursor_y'], editor_state['cursor_x'])
-                cursor_display_y = cursor_display_pos[0]
-
-                # Scrolling logic
-                scroll_offset = editor_state['scroll_offset']
-                if cursor_display_y < scroll_offset:
-                    scroll_offset = cursor_display_y
-                if cursor_display_y >= scroll_offset + max_lines_on_screen:
-                    scroll_offset = cursor_display_y - max_lines_on_screen + 1
-                editor_state['scroll_offset'] = scroll_offset
-
-                draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-                self._draw_editor_ui(draw, editor_state, display_lines, cursor_display_pos)
                 
-                is_full = False
-                if force_full_refresh or self.partial_refresh_count >= self.FULL_REFRESH_INTERVAL:
-                    is_full = True
+                # Adjust scroll offset based on cursor position
+                if cursor_display_pos[0] < editor_state['scroll_offset']:
+                    editor_state['scroll_offset'] = cursor_display_pos[0]
+                if cursor_display_pos[0] >= editor_state['scroll_offset'] + max_lines_on_screen:
+                    editor_state['scroll_offset'] = cursor_display_pos[0] - max_lines_on_screen + 1
+
+                if is_full_refresh_needed:
+                    logger.debug("Performing full refresh.")
+                    self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
+                    self.renderer.draw_ui(self.display.draw, editor_state, display_lines, cursor_display_pos, self.cursor_blink_on)
+                    self.display.display_image(is_full_refresh=True)
                     self.partial_refresh_count = 0
-                else:
+                else: # Partial refresh
+                    logger.debug("Performing partial refresh.")
+                    editor_area = (0, config.EDITOR_HEADER_HEIGHT, self.display.width, self.display.height - config.EDITOR_FOOTER_HEIGHT)
+                    self.display.draw.rectangle(editor_area, fill=255)
+                    self.renderer.draw_ui(self.display.draw, editor_state, display_lines, cursor_display_pos, self.cursor_blink_on)
+                    self.display.display_image(is_full_refresh=False)
                     self.partial_refresh_count += 1
                 
-                self.display.display_image(is_full_refresh=is_full)
-                
-                needs_update = False
-                force_full_refresh = False
+                # Reset dirty flags
+                editor_state['layout_changed'] = False
+                editor_state['content_changed'] = False
+                editor_state['timers_changed'] = False
+
 
 # --- MAIN EXECUTION ---
 if __name__ == '__main__':
+    try:
+        import waveshare_epd
+        logger.info(f"waveshare_epd library version: {getattr(waveshare_epd, '__version__', 'N/A')}")
+        logger.info(f"waveshare_epd library path: {waveshare_epd.__file__}")
+    except ImportError:
+        logger.warning("Could not import waveshare_epd to determine version.")
+
     original_stderr = sys.stderr
     display_manager = DisplayManager()
     try:
