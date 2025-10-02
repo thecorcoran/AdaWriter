@@ -39,7 +39,7 @@ class DisplayManager:
         self.image = Image.new('1', (self.width, self.height), 255) # 255 for white
         self.draw = ImageDraw.Draw(self.image)
         self._is_sleeping = True
-        self.start()
+        # self.start() # We will now call this manually after drawing the first screen
 
         # Pre-load all fonts using portable paths
         assets_path = os.path.join(config.BASE_DIR, config.ASSETS_FOLDER)
@@ -63,8 +63,8 @@ class DisplayManager:
         """Initializes the display. This should be called once when the app starts."""
         if not self.simulated_display:
             logging.info("Initializing and clearing display...")
-            self.epd.init_fast(self.epd.Seconds_1_5S)
-            self.epd.Clear()
+            self.epd.init() # Use full init for the first draw
+            self.epd.display(self.epd.getbuffer(self.image))
             self._is_sleeping = False
             logging.info("Display initialized.")
             self._current_mode = 'fast'

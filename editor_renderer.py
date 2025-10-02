@@ -18,16 +18,27 @@ class EditorRenderer:
         """
         Draws the entire editor interface onto the provided draw object.
         """
+        self.draw_header_and_footer(draw, editor_state)
+        self.draw_text_area(draw, editor_state, display_lines, cursor_display_pos, cursor_blink_on)
+
+    def draw_header_and_footer(self, draw, editor_state):
+        """Draws just the top and bottom bars of the editor."""
+        # Clear header and footer areas
+        draw.rectangle((0, 0, self.display.width, config.EDITOR_HEADER_HEIGHT), fill=255)
+        draw.rectangle((0, self.display.height - config.EDITOR_FOOTER_HEIGHT, self.display.width, self.display.height), fill=255)
+        
+        self.display._draw_text_centered(draw, 20, editor_state['title'], self.display.fonts['heading'])
+        self._draw_status_indicators(draw)
+        self.display._draw_text_centered(draw, self.display.height - 25, "Arrows=Move, ESC=Save & Exit, F1=Words, F2=Time", self.display.fonts['footer'])
+
+    def draw_text_area(self, draw, editor_state, display_lines, cursor_display_pos, cursor_blink_on):
+        """Draws the main text content and cursor."""
         cursor_display_y, cursor_display_x = cursor_display_pos
         editor_font = self.display.fonts['editor']
         line_bbox = editor_font.getbbox("Tg")
         line_height = (line_bbox[3] - line_bbox[1]) + 4
         max_lines_on_screen = (self.display.height - config.EDITOR_HEADER_HEIGHT - config.EDITOR_FOOTER_HEIGHT) // line_height
         
-        # --- Draw Header ---
-        self.display._draw_text_centered(draw, 20, editor_state['title'], self.display.fonts['heading'])
-        
-        # --- Draw Text Area ---
         y_pos = config.EDITOR_HEADER_HEIGHT
         start_index = editor_state['scroll_offset']
         end_index = editor_state['scroll_offset'] + max_lines_on_screen
@@ -54,13 +65,11 @@ class EditorRenderer:
                     self.last_cursor_rect = [cursor_x_start, cursor_y_pos, cursor_x_start + cursor_width, cursor_y_pos + 1]
                     draw.rectangle(self.last_cursor_rect, fill=0)
             y_pos += line_height
-
-        # --- Draw Status Indicators ---
+    
+    def _draw_status_indicators(self, draw):
+        """Draws indicators like 'Saved' or word count in the header."""
         indicator_text = self.app._get_active_indicator_text()
         if indicator_text:
             bbox = self.display.fonts['status'].getbbox(indicator_text)
             text_w = bbox[2] - bbox[0]
             draw.text((self.display.width - config.TEXT_MARGIN - text_w, 10), indicator_text, font=self.display.fonts['status'], fill=0)
-        
-        # --- Draw Footer ---
-        self.display._draw_text_centered(draw, self.display.height - 25, "Arrows=Move, ESC=Save & Exit, F1=Words, F2=Time", self.display.fonts['footer'])

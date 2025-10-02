@@ -63,8 +63,9 @@ class AdaWriter:
 
             # Find all daily files for that month and sort them
             daily_files_for_month = sorted([
-                f for f in os.listdir(self.projects_dir)
-                if f.startswith(file_basename[:7]) and f.count('-') == 2 and f.endswith('.txt')
+                f for f in os.listdir(self.projects_dir) 
+                # Ensure we only get daily files (e.g., YYYY-MM-DD.txt) and not the monthly file (YYYY-MM.txt)
+                if f.startswith(file_basename[:7]) and f.count('-') == 2 and f.endswith('.txt') 
             ])
 
             full_daily_content = ""
@@ -119,15 +120,16 @@ class AdaWriter:
     def run(self):
         """Main application loop."""
         try:
-            should_shutdown = False
+            should_shutdown = False; is_first_loop = True
             while not should_shutdown:
                 self.keyboard.shift_pressed = False # Reset shift state on main menu
                 if time.time() - self.last_activity > config.INACTIVITY_TIMEOUT_SECONDS:
                     logger.info("Inactivity timeout reached. Shutting down.")
                     should_shutdown = True
                     continue
-    
-                self.show_main_menu()
+                
+                self.show_main_menu(is_first_run=is_first_loop)
+                if is_first_loop: is_first_loop = False
                 choice = self.wait_for_direct_choice([ecodes.KEY_1, ecodes.KEY_2, ecodes.KEY_W, ecodes.KEY_Q])
                 
                 if choice == ecodes.KEY_1: self.show_journal()
@@ -168,7 +170,7 @@ class AdaWriter:
                     if event.code in valid_key_codes:
                         return event.code
 
-    def show_main_menu(self):
+    def show_main_menu(self, is_first_run=False):
         draw = self.display.draw # Use persistent draw object
         draw.rectangle((0, 0, self.display.width, self.display.height), fill=255) # Clear the buffer
         
@@ -187,12 +189,19 @@ class AdaWriter:
             draw.text((self.display.width - config.TEXT_MARGIN - text_w, 10), indicator_text, font=self.display.fonts['status'], fill=0)
 
         self.display._draw_text_centered(draw, self.display.height - 20, "W for Wi-Fi, Q to Quit", self.display.fonts['footer'])
-        self.display.display_image(is_full_refresh=True)
+        
+        # On the very first run, we don't need to refresh here because the DisplayManager will do it.
+        # For all subsequent calls (e.g., returning from another screen), we do a full refresh.
+        if not is_first_run:
+            self.display.display_image(is_full_refresh=True)
 
     def show_message(self, message, duration_sec=3, fatal_error=False, full_refresh=True):
         """Displays a message on the screen for a certain duration."""
         self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-        self.display._draw_text_centered(self.display.draw, self.display.height // 2, message, self.display.fonts['menu'])
+        # Use _draw_wrapped_text to handle multi-line and long messages correctly.
+        # We need to calculate the starting y-position to center it vertically.
+        y_start = self.display.height // 3 # A reasonable starting point
+        self.display._draw_wrapped_text(y_start, message, self.display.fonts['menu'], margin=config.TEXT_MARGIN, centered=True)
         self.display.display_image(is_full_refresh=full_refresh)
         
         if fatal_error:
@@ -205,7 +214,13 @@ class AdaWriter:
         today = date.today()
         journal_filename = f"{today.strftime('%Y-%m-%d')}.txt"
         journal_path = os.path.join(self.projects_dir, journal_filename)
-        self.edit_project(file_path=journal_path, editor_title="Daily Journal", is_journal=True)
+        
+        # Ensure the daily file exists before opening it.
+        if not os.path.exists(journal_path):
+            journal_content = f"{today.strftime('%B %d, %Y')}\n\n"
+            with open(journal_path, 'w', encoding='utf-8') as f: f.write(journal_content)
+            logger.info(f"Created new daily journal: {journal_filename}")
+        self.edit_project(file_path=journal_path, editor_title="Daily Journal", is_journal=True) # Always edit the daily file.
 
     def show_projects_list(self):
         """Displays a scrollable list of project files."""
@@ -242,7 +257,7 @@ class AdaWriter:
 
                 footer_text = "Enter=Open, R=Rename, N=New, Del=Delete\nESC=Return"
                 self.display._draw_text_centered(draw, self.display.height - 25, footer_text, self.display.fonts['footer'])
-                self.display.display_image(is_full_refresh=True)
+                self.display.display_image(is_full_refresh=False)
                 needs_redraw = False
 
             choice = self.wait_for_direct_choice([ecodes.KEY_UP, ecodes.KEY_DOWN, ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT, ecodes.KEY_PAGEUP, ecodes.KEY_PAGEDOWN, ecodes.KEY_ENTER, ecodes.KEY_ESC, ecodes.KEY_R, ecodes.KEY_N, ecodes.KEY_DELETE])
@@ -268,17 +283,18 @@ class AdaWriter:
             elif choice == ecodes.KEY_R:
                 if files:
                     self.rename_project_ui(os.path.join(self.projects_dir, files[selected_index]))
+                    # After renaming, reload files and redraw the list with a full refresh
+                    self.show_message("Reloading list...", duration_sec=0.5, full_refresh=True)
                     return self.show_projects_list()
-                    # After renaming, we need to reload files and redraw the list.
-                    return self.show_projects_list() # This re-runs the function from scratch.
             elif choice == ecodes.KEY_DELETE:
                 if files:
                     if self.confirm_action(f"Delete '{os.path.splitext(files[selected_index])[0]}'?"):
                         os.remove(os.path.join(self.projects_dir, files[selected_index]))
                         self.show_message("Deleted.", duration_sec=2)
+                        # After deleting, reload files and redraw the list with a full refresh
+                        self.show_message("Reloading list...", duration_sec=0.5, full_refresh=True)
                         return self.show_projects_list()
                     else:
-                        needs_redraw = True
                         needs_redraw = True # Just redraw if deletion is cancelled.
             elif choice == ecodes.KEY_ENTER:
                 if files:
@@ -427,7 +443,6 @@ class AdaWriter:
                 cursor_y_start = 100
                 draw.rectangle([cursor_x_start, cursor_y_start, cursor_x_start + 10, cursor_y_start + 20], fill=0)
             
-            self.display.display_partial(self.display.image, text_area_rect)
             self.display.display_image(is_full_refresh=False)
 
             # Non-blocking event check
@@ -573,11 +588,6 @@ class AdaWriter:
     def initiate_shutdown(self):
         logger.info("Shutdown initiated by user or timeout.")
         draw = self.display.draw
-        
-        self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
-        self.display._draw_text_centered(draw, self.display.height // 2, "Shutting down...", self.display.fonts['footer'])
-        self.display.display_image(is_full_refresh=True)
-        time.sleep(2)
 
         if self.display.shutdown_image:
             self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
@@ -595,7 +605,7 @@ class AdaWriter:
             quote = "Everything I know, I know because of love."
             quote_font = self.display.fonts['body']
             quote_y = img_y + self.display.shutdown_image.height + 20
-            self.display._draw_wrapped_text(quote_y, quote, quote_font, margin)
+            self.display._draw_wrapped_text(quote_y, quote, quote_font, margin, centered=True)
             
             self.display.display_image(is_full_refresh=True)
         
@@ -624,7 +634,7 @@ class TextEditor:
         self.last_blink_time = 0
         self.BLINK_INTERVAL_MS = 800
         self.partial_refresh_count = 0
-        self.FULL_REFRESH_INTERVAL = 20 # Force a full refresh after this many partials
+        self.FULL_REFRESH_INTERVAL = 100 # Force a full refresh after this many partials
 
     def _get_wrapped_lines(self, source_lines):
         """
@@ -709,7 +719,7 @@ class TextEditor:
                 editor_state['cursor_y'] -= 1
                 editor_state['cursor_x'] = prev_line_len
                 editor_state['layout_changed'] = True
-        elif code == ecodes.KEY_F1 or code == ecodes.KEY_F2: # This was the previous fix, now we adjust the main loop
+        elif code in (ecodes.KEY_F1, ecodes.KEY_F2): # This was the previous fix, now we adjust the main loop
             editor_state['timers_changed'] = True # Force header/footer redraw for status indicators
             if code == ecodes.KEY_F1:
                 word_count = len("\n".join(lines).split())
@@ -811,19 +821,26 @@ class TextEditor:
             if self.keyboard.has_input(0.05):
                 for event in self.keyboard.read_events():
                     if event.type != ecodes.EV_KEY: continue
+
                     self.app.last_activity = time.time()
                     self.last_activity_time = time.time()
                     self.cursor_blink_on = True
                     self.last_blink_time = pygame.time.get_ticks()
+
+                    if event.code in (ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT):
+                        self.keyboard.shift_pressed = (event.value != 0) # Handle both press (1) and release (0)
+                        continue # Continue to next event
+
+                    if event.value != 1: continue # Only process key-down for other keys
+
                     content_changed_since_last_save = True
 
-                    if event.code == ecodes.KEY_ESC and event.value == 1:
+                    if event.code == ecodes.KEY_ESC:
                         if content_changed_since_last_save:
                             with open(file_path, 'w', encoding='utf-8') as f: f.write('\n'.join(editor_state['lines']) + '\n')
                             self.app.save_indicator_active, self.app.save_indicator_timer = True, pygame.time.get_ticks()
                         if is_journal: self.app._update_monthly_journal(file_path)
                         return # Exit editor
-
                     self._handle_editor_input(event, editor_state)
             
             # --- State Updates from Timers ---
@@ -849,31 +866,39 @@ class TextEditor:
             
             # --- Rendering Logic ---
             # A timer change (like F1/F2) should not force a full refresh on its own.
+            # --- Rendering Logic: Determine what needs to be redrawn ---
             is_full_refresh_needed = editor_state['layout_changed'] or self.partial_refresh_count >= self.FULL_REFRESH_INTERVAL
-            is_partial_refresh_needed = editor_state['content_changed']
+            is_content_refresh_needed = editor_state['content_changed']
+            is_header_footer_refresh_needed = editor_state['timers_changed']
 
-            if is_full_refresh_needed or is_partial_refresh_needed:
+            if is_full_refresh_needed or is_content_refresh_needed or is_header_footer_refresh_needed:
                 display_lines, source_line_map = self._get_wrapped_lines(editor_state['lines'])
                 cursor_display_pos = self._calculate_cursor_on_display(display_lines, source_line_map, editor_state['cursor_y'], editor_state['cursor_x'])
-                
-                # Adjust scroll offset based on cursor position
+
+                # Adjust scroll offset if cursor moves out of view
                 if cursor_display_pos[0] < editor_state['scroll_offset']:
                     editor_state['scroll_offset'] = cursor_display_pos[0]
                 if cursor_display_pos[0] >= editor_state['scroll_offset'] + max_lines_on_screen:
                     editor_state['scroll_offset'] = cursor_display_pos[0] - max_lines_on_screen + 1
 
-                # If timers changed, we need to redraw the whole screen, but a partial refresh is sufficient.
-                if is_full_refresh_needed or editor_state['timers_changed']:
-                    logger.debug("Performing full refresh.")
+                if is_full_refresh_needed:
+                    logger.debug("Performing full refresh (layout change or interval).")
                     self.display.draw.rectangle((0, 0, self.display.width, self.display.height), fill=255)
                     self.renderer.draw_ui(self.display.draw, editor_state, display_lines, cursor_display_pos, self.cursor_blink_on)
-                    self.display.display_image(is_full_refresh=is_full_refresh_needed)
+                    self.display.display_image(is_full_refresh=True)
                     self.partial_refresh_count = 0
-                elif is_partial_refresh_needed: # Partial refresh for content changes only
-                    logger.debug("Performing partial refresh.")
-                    editor_area = (0, config.EDITOR_HEADER_HEIGHT, self.display.width, self.display.height - config.EDITOR_FOOTER_HEIGHT)
-                    self.display.draw.rectangle(editor_area, fill=255)
-                    self.renderer.draw_ui(self.display.draw, editor_state, display_lines, cursor_display_pos, self.cursor_blink_on)
+                else:
+                    # For partial updates, only redraw the necessary sections
+                    if is_content_refresh_needed:
+                        logger.debug("Partial refresh: content changed.")
+                        editor_area = (0, config.EDITOR_HEADER_HEIGHT, self.display.width, self.display.height - config.EDITOR_FOOTER_HEIGHT)
+                        self.display.draw.rectangle(editor_area, fill=255)
+                        self.renderer.draw_text_area(self.display.draw, editor_state, display_lines, cursor_display_pos, self.cursor_blink_on)
+                    
+                    if is_header_footer_refresh_needed:
+                        logger.debug("Partial refresh: header/footer changed.")
+                        self.renderer.draw_header_and_footer(self.display.draw, editor_state)
+
                     self.display.display_image(is_full_refresh=False)
                     self.partial_refresh_count += 1
                 
@@ -898,6 +923,8 @@ if __name__ == '__main__':
         logger.info("AdaWriter starting up.")
         keyboard_device = Keyboard()
         app = AdaWriter(keyboard_device, display_manager)
+        app.show_main_menu(is_first_run=True) # Draw the initial UI before the first refresh
+        display_manager.start() # This will now display the pre-drawn menu
         app.run()
     except Exception as e:
         logger.error(f"--- CRITICAL STARTUP FAILURE: {e} ---", exc_info=True)
@@ -911,4 +938,4 @@ if __name__ == '__main__':
     finally:
         logger.info("AdaWriter shutting down.")
         pygame.quit()
-        sys.exit(0)os
+        sys.exit(0)
