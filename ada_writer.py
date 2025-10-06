@@ -6,12 +6,21 @@ os.environ['SDL_AUDIODRIVER'] = 'dummy'
 import sys
 import pygame
 import threading
+import signal
 import time
 import subprocess
 import traceback
 from evdev import ecodes
 from datetime import date, datetime
 import netifaces
+
+# --- E-Paper Driver Import ---
+# Attempt to import the hardware driver. If it fails, set a flag.
+try:
+    import waveshare_epd
+    EINK_DRIVER_AVAILABLE = True
+except ImportError:
+    EINK_DRIVER_AVAILABLE = False
 
 # Local imports
 import config
@@ -24,6 +33,15 @@ import wifi_manager
 
 pygame.init()
 logger = setup_logger()
+
+# --- Graceful Shutdown Handler ---
+SHUTDOWN_REQUESTED = False
+def handle_shutdown_signal(signum, frame):
+    """Handle termination signals from systemd."""
+    global SHUTDOWN_REQUESTED
+    if not SHUTDOWN_REQUESTED:
+        logger.info(f"Received signal {signum}. Initiating graceful shutdown.")
+        SHUTDOWN_REQUESTED = True
 
 class AdaWriter:
     def __init__(self, keyboard_device, display_manager):
@@ -121,10 +139,10 @@ class AdaWriter:
         """Main application loop."""
         try:
             should_shutdown = False; is_first_loop = True
-            while not should_shutdown:
+            while not should_shutdown and not SHUTDOWN_REQUESTED:
                 self.keyboard.shift_pressed = False # Reset shift state on main menu
                 if time.time() - self.last_activity > config.INACTIVITY_TIMEOUT_SECONDS:
-                    logger.info("Inactivity timeout reached. Shutting down.")
+                    logger.info("Inactivity timeout reached. Requesting shutdown.")
                     should_shutdown = True
                     continue
                 
@@ -139,7 +157,7 @@ class AdaWriter:
                     if self.confirm_action("Really shut down?"):
                         should_shutdown = True
             
-            if should_shutdown:
+            if should_shutdown or SHUTDOWN_REQUESTED:
                 self.initiate_shutdown()
 
         except Exception as e:
@@ -156,7 +174,7 @@ class AdaWriter:
 
     def wait_for_direct_choice(self, valid_key_codes):
         """Waits for a specific key press from a list of valid keys."""
-        while True:
+        while not SHUTDOWN_REQUESTED:
             if time.time() - self.last_activity > config.INACTIVITY_TIMEOUT_SECONDS:
                 logger.info("Inactivity timeout in wait_for_direct_choice.")
                 return ecodes.KEY_Q
@@ -910,15 +928,19 @@ class TextEditor:
 
 # --- MAIN EXECUTION ---
 if __name__ == '__main__':
-    try:
-        import waveshare_epd
+    if EINK_DRIVER_AVAILABLE:
         logger.info(f"waveshare_epd library version: {getattr(waveshare_epd, '__version__', 'N/A')}")
         logger.info(f"waveshare_epd library path: {waveshare_epd.__file__}")
-    except ImportError:
-        logger.warning("Could not import waveshare_epd to determine version.")
+    else:
+        logger.warning("waveshare_epd library not found. Running in simulation mode.")
+
+    # Register signal handlers for graceful shutdown
+    signal.signal(signal.SIGTERM, handle_shutdown_signal)
+    signal.signal(signal.SIGINT, handle_shutdown_signal)
 
     original_stderr = sys.stderr
-    display_manager = DisplayManager()
+    # Pass the driver availability status to the DisplayManager
+    display_manager = DisplayManager(eink_driver_available=EINK_DRIVER_AVAILABLE)
     try:
         logger.info("AdaWriter starting up.")
         keyboard_device = Keyboard()

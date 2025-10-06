@@ -1,0 +1,15 @@
+[Unit]
+Description=AdaWriter E-Ink Distraction-Free Writer
+After=network.target
+
+[Service]
+Environment="SDL_VIDEODRIVER=dummy"
+ExecStart=/home/pi/AdaWriter/venv/bin/python3 /home/pi/AdaWriter/ada_writer.py
+WorkingDirectory=/home/pi/AdaWriter
+StandardOutput=journal
+StandardError=journal
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

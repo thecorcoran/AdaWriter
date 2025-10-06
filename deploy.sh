@@ -21,22 +21,25 @@ rsync -avz \
 # Check if rsync was successful
 if [ $? -eq 0 ]; then
   echo "✅ Sync complete."
-  echo "🚀 Restarting the script on the Pi..."
+  echo "🚀 Restarting the AdaWriter service on the Pi..."
 
   # Step 2: SSH into the Pi and run the commands
   ssh admin@10.0.0.31 << EOF
-    # Go to the project directory
-    cd ~/AdaWriter
+    # Stop the service to release all resources (like the keyboard)
+    sudo systemctl stop adawriter.service
 
-    # Kill any previously running instance of the script
-    pkill -f ada_writer.py
-    sleep 0.5 # Give it a moment to release resources
-
-    # Activate the virtual environment and run the new script
-    source venv/bin/activate
-    python3 ada_writer.py
+    # Ensure all Python dependencies are installed
+    echo "Installing/updating Python packages..."
+    source ~/AdaWriter/venv/bin/activate
+    pip install -r ~/AdaWriter/requirements.txt --no-input
+    
+    # Restart the service with the new code
+    sudo systemctl restart adawriter.service
+    
+    echo "Service restarted. Tailing logs for 10 seconds..."
+    sudo journalctl -u adawriter.service -f --no-pager | head -n 20
 EOF
-  echo "🎉 Script is running on the AdaWriter."
+  echo "🎉 Deployment complete. The service is now running on the AdaWriter."
 else
   echo "❌ Error: rsync failed. Please check the connection and paths."
 fi

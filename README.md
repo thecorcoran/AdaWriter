@@ -40,76 +40,66 @@ If you are using a different keyboard layout, you can create a new JSON file and
 
 ## Setup and Installation
 
-There are two primary methods for setting up an AdaWriter device: the automated method (recommended) and the manual method.
+The recommended way to set up a new AdaWriter device is to use the Raspberry Pi Imager to create a pre-configured SD card that runs the provisioning script on its first boot.
 
-### Automated Setup (Recommended)
+### Fully Automated Setup (Recommended)
 
-This method uses a provisioning script to automate all the necessary installation steps. It is the fastest and most reliable way to set up a new device.
+This method flashes the OS and runs the setup script automatically.
 
-1.  **Flash OS**: Flash a new SD card with the latest Raspberry Pi OS Lite.
-2.  **Boot and Connect**: Boot the Raspberry Pi and ensure it is connected to the internet.
-3.  **Clone Repository**:
+1.  **Download Raspberry Pi Imager**: Get the official imager from the [Raspberry Pi website](https://www.raspberrypi.com/software/).
+2.  **Choose OS**: Select "Raspberry Pi OS (other)" -> "Raspberry Pi OS Lite (Legacy, 64-bit)" based on Debian Bullseye.
+3.  **Open Advanced Settings**: Before writing, click the gear icon ⚙️ to open the advanced settings.
+4.  **Configure Settings**:
+    *   **Set hostname**: e.g., `adawriter`.
+    *   **Enable SSH**: Choose "Use password authentication".
+    *   **Set username and password**: Create a user (e.g., `pi` or `admin`). **Note:** The `provision.sh` script defaults to the user `pi`. If you choose a different username, you must edit the `TARGET_USER` variable in the script.
+    *   **Configure wireless LAN**: Enter the SSID and password for your Wi-Fi network. This is crucial for the script to download dependencies.
+    *   **Set locale settings**: Set your timezone and keyboard layout.
+5.  **Enable First-Boot Script**:
+    *   Scroll to the bottom of the advanced settings.
+    *   Check the box for **"Run command"**.
+    *   Copy the entire contents of the `provision.sh` script from this repository and paste it into the text box.
+6.  **Write the SD Card**: Click "SAVE", then "WRITE".
+7.  **Boot the Device**: Insert the SD card into your Raspberry Pi and power it on. The device will boot, connect to Wi-Fi, and automatically run the entire setup script. This process can take 5-10 minutes. The device will be ready to use after this.
+
+### Manual Setup
+
+If you already have a running Raspberry Pi, you can run the provisioning script manually.
+
+1.  **Boot and Connect**: Ensure your Raspberry Pi is running and connected to the internet.
+2.  **Clone Repository**:
     ```bash
     git clone https://github.com/thecorcoran/AdaWriter.git
     cd AdaWriter
     ```
-4.  **Run Provisioning Script**: Make the script executable and run it.
+3.  **Run Provisioning Script**: Make the script executable and run it with `sudo`.
     ```bash
     chmod +x provision.sh
-    ./provision.sh
+    sudo ./provision.sh
     ```
-The script will handle system updates, dependency installation, SPI activation, and Python environment setup.
+The script will set up all dependencies and enable the application to start automatically on boot.
 
-### Manual Setup
+## Running the Application
 
-Follow these steps if you prefer to set up the device manually.
+If you used the provisioning script, the AdaWriter application will start automatically when the device boots.
 
-#### 1. System Configuration
+### Manual Control (for Development)
 
-Enable the SPI interface, which is required for the e-paper display.
-
-```bash
-sudo raspi-config
-```
-Navigate to `3 Interface Options` -> `I4 SPI` and select `<Yes>` to enable it.
-
-### 2. Install System Dependencies
-
-Install the necessary system libraries and tools.
-```bash
-sudo apt-get update
-sudo apt-get install -y git python3-pip python3-pil python3-numpy libxml2-dev libxslt1-dev python3-venv
-```
-
-### 3. Install E-Paper Driver
-
-The Waveshare driver must be installed from its official GitHub repository.
+You can manually control the `adawriter` service using `systemctl`. This is useful for development or debugging.
 
 ```bash
-git clone https://github.com/waveshare/e-Paper.git
-cd e-Paper/RaspberryPi_JetsonNano/python/
-sudo python3 setup.py install
-cd ../../../
-```
+# Stop the service
+sudo systemctl stop adawriter.service
 
-### 4. Install Python Dependencies
+# Start the service
+sudo systemctl start adawriter.service
 
-Clone this repository and install the required Python packages using `pip`.
+# View the application's log output
+sudo journalctl -u adawriter.service -f
 
-```bash
-git clone https://github.com/thecorcoran/AdaWriter.git
-cd AdaWriter
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+# Disable auto-start on boot
+sudo systemctl disable adawriter.service
 
-## How to Run
-
-To run the application, you must run it with `sudo` to grant the necessary permissions for accessing the keyboard device directly and controlling the system.
-
-With the virtual environment activated, run the main application script:
-
-```bash
-sudo python3 ada_writer.py
+# Re-enable auto-start on boot
+sudo systemctl enable adawriter.service
 ```

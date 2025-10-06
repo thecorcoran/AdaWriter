@@ -16,11 +16,12 @@ except ImportError:
 import config
 
 class DisplayManager:
-    def __init__(self):
-        self.simulated_display = False
-        if epd4in2_V2 is None:
-            self.simulated_display = True
-            logging.warning("E-ink library not found. Running in simulation mode.")
+    def __init__(self, eink_driver_available=False):
+        self.is_simulation = not eink_driver_available
+        self.epd = None
+
+        if self.is_simulation:
+            logging.warning("E-ink library not found or hardware init failed. Running in simulation mode.")
             self.width = 400
             self.height = 300
         else:
@@ -28,10 +29,9 @@ class DisplayManager:
                 self.epd = epd4in2_V2.EPD()
                 self.width = self.epd.width
                 self.height = self.epd.height
-                logging.info("E-ink display object created.")
             except Exception as e:
                 logging.error(f"E-ink hardware not found: {e}. Running in simulation mode.")
-                self.simulated_display = True
+                self.is_simulation = True
                 self.width = 400
                 self.height = 300
 
@@ -61,7 +61,7 @@ class DisplayManager:
 
     def start(self):
         """Initializes the display. This should be called once when the app starts."""
-        if not self.simulated_display:
+        if not self.is_simulation:
             logging.info("Initializing and clearing display...")
             self.epd.init() # Use full init for the first draw
             self.epd.display(self.epd.getbuffer(self.image))
@@ -102,7 +102,7 @@ class DisplayManager:
         - For partial refresh, it's recommended to use display_partial for efficiency.
         """
         img = image if image is not None else self.image
-        if self.simulated_display:
+        if self.is_simulation:
             # The test script relies on this behavior.
             img.save("sim_output.png")
             return
@@ -136,7 +136,7 @@ class DisplayManager:
         Updates a specific rectangular area of the display.
         Box is a tuple (x_start, y_start, x_end, y_end).
         """
-        if self.simulated_display or self._is_sleeping:
+        if self.is_simulation or self._is_sleeping:
             return
 
         x_start, y_start, x_end, y_end = box
@@ -173,14 +173,14 @@ class DisplayManager:
         """
         Updates multiple rectangular areas of the display.
         """
-        if self.simulated_display or self._is_sleeping:
+        if self.is_simulation or self._is_sleeping:
             return
         for box in dirty_rects:
             self.display_partial(image, box)
 
     def sleep(self):
         """Puts the display to sleep."""
-        if not self.simulated_display and not self._is_sleeping:
+        if not self.is_simulation and not self._is_sleeping:
             logging.info("Putting display to sleep.")
             self.epd.sleep()
             self._is_sleeping = True

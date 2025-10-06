@@ -607,3 +607,23 @@
 2025-10-01 15:14:03,828 - DEBUG - STREAM b'IDAT' 41 954
 2025-10-01 15:14:03,829 - DEBUG - STREAM b'IHDR' 16 13
 2025-10-01 15:14:03,829 - DEBUG - STREAM b'IDAT' 41 954
+2025-10-06 13:48:29,570 - WARNING - waveshare_epd library not found. Running in simulation mode.
+2025-10-06 13:48:29,574 - WARNING - E-ink library not found or hardware init failed. Running in simulation mode.
+2025-10-06 13:48:29,744 - DEBUG - STREAM b'IHDR' 16 13
+2025-10-06 13:48:29,744 - DEBUG - STREAM b'sBIT' 41 3
+2025-10-06 13:48:29,745 - DEBUG - b'sBIT' 41 3 (unknown)
+2025-10-06 13:48:29,745 - DEBUG - STREAM b'PLTE' 56 6
+2025-10-06 13:48:29,745 - DEBUG - STREAM b'IDAT' 74 1881
+2025-10-06 13:48:29,747 - INFO - AdaWriter starting up.
+2025-10-06 13:48:29,748 - ERROR - --- CRITICAL STARTUP FAILURE: Keyboard not found. ---
+Traceback (most recent call last):
+  File "/home/jonathan-corcoran/Desktop/AdaWriter/ada_writer.py", line 932, in <module>
+    keyboard_device = Keyboard()
+                      ^^^^^^^^^^
+  File "/home/jonathan-corcoran/Desktop/AdaWriter/keyboard.py", line 13, in __init__
+    self.device = self._find_and_init_keyboard()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jonathan-corcoran/Desktop/AdaWriter/keyboard.py", line 40, in _find_and_init_keyboard
+    raise RuntimeError("Keyboard not found.")
+RuntimeError: Keyboard not found.
+2025-10-06 13:48:48,714 - INFO - AdaWriter shutting down.
