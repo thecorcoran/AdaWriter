@@ -55,6 +55,7 @@ This method flashes the OS and runs the setup script automatically.
     *   **Set username and password**: Create a user (e.g., `pi` or `admin`). **Note:** The `provision.sh` script defaults to the user `pi`. If you choose a different username, you must edit the `TARGET_USER` variable in the script.
     *   **Configure wireless LAN**: Enter the SSID and password for your Wi-Fi network. This is crucial for the script to download dependencies.
     *   **Set locale settings**: Set your timezone and keyboard layout.
+    *   **Set username and password**: Create a user (e.g., `pi` or `admin`). The provisioning script will automatically detect this username.
 5.  **Enable First-Boot Script**:
     *   Scroll to the bottom of the advanced settings.
     *   Check the box for **"Run command"**.
