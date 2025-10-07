@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 Environment="SDL_VIDEODRIVER=dummy"
+Environment="GPIOZERO_PIN_FACTORY=rpigpio"
 ExecStart=/home/admin/AdaWriter/venv/bin/python3 /home/admin/AdaWriter/ada_writer.py
 WorkingDirectory=/home/admin/AdaWriter
 StandardOutput=journal

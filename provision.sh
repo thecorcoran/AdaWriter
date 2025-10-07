@@ -31,7 +31,7 @@ echo "--> Updating package lists and installing system dependencies..."
 apt-get update
 # We install build tools and libraries, but NOT python3-pil.
 # Pillow will be installed correctly via pip in the virtual environment.
-apt-get install -y git python3-pip python3-numpy libxml2-dev libxslt1-dev python3-venv libopenjp2-7 build-essential
+apt-get install -y git python3-pip python3-numpy libxml2-dev libxslt1-dev python3-venv libopenjp2-7 build-essential python3-gpiozero
 
 # Step 2: Enable SPI interface
 echo "--> Enabling SPI interface via raspi-config non-interactively..."
@@ -57,6 +57,8 @@ sudo -u ${TARGET_USER} bash -c "
     set -e
     source \"${PROJECT_DIR}/venv/bin/activate\"
     echo '--> Installing dependencies from requirements.txt...'
+    # Also add 'gpiozero' to your requirements.txt file for completeness
+    # pip install gpiozero
     pip install -r \"${PROJECT_DIR}/requirements.txt\" --no-input
 
     echo '--> Cloning Waveshare e-Paper driver (this may take a moment)...'
