@@ -630,7 +630,7 @@ class AdaWriter:
         self.display.sleep()
         pygame.quit()
         logger.info("Initiating system shutdown command.")
-        os.system("sudo shutdown -h now")
+        # os.system("sudo shutdown -h now")
         sys.exit(0)
     
     def edit_project(self, file_path, editor_title="Editor", is_journal=False):

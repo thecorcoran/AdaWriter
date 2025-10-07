@@ -7,7 +7,7 @@
 echo "🔄 Syncing files to AdaWriter..."
 
 # Step 1: Sync files using your rsync command
-rsync -avz \
+rsync -avz --delete \
   --exclude 'projects/' \
   --exclude '*.pyc' \
   --exclude '__pycache__/' \
@@ -15,8 +15,9 @@ rsync -avz \
   --exclude 'venv/' \
   --exclude 'adawriter.log' \
   --exclude 'sim_output.png' \
+  --exclude '.git/' \
   ~/Desktop/AdaWriter/ \
-  admin@10.0.0.31:~/AdaWriter/
+  admin@10.0.0.31:~/
 
 # Check if rsync was successful
 if [ $? -eq 0 ]; then
@@ -34,10 +35,10 @@ if [ $? -eq 0 ]; then
     pip install -r ~/AdaWriter/requirements.txt --no-input
     
     # Restart the service with the new code
-    sudo systemctl restart adawriter.service
+    sudo systemctl start adawriter.service
     
     echo "Service restarted. Tailing logs for 10 seconds..."
-    sudo journalctl -u adawriter.service -f --no-pager | head -n 20
+    timeout 10 sudo journalctl -u adawriter.service -f --no-pager
 EOF
   echo "🎉 Deployment complete. The service is now running on the AdaWriter."
 else
