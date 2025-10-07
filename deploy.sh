@@ -32,6 +32,10 @@ if [ $? -eq 0 ]; then
     echo "Installing/updating Python packages..."
     source ~/AdaWriter/venv/bin/activate
     pip install -r ~/AdaWriter/requirements.txt --no-input
+
+    # Copy the service file and reload systemd to apply changes
+    sudo cp ~/AdaWriter/adawriter.service /etc/systemd/system/adawriter.service
+    sudo systemctl daemon-reload
     
     # Restart the service with the new code
     sudo systemctl restart adawriter.service
