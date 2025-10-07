@@ -31,6 +31,12 @@ if [ $? -eq 0 ]; then
     # Ensure all Python dependencies are installed
     echo "Installing/updating Python packages..."
     source ~/AdaWriter/venv/bin/activate
+
+    # Force-reinstall the correct GPIO libraries to resolve Jetson/RPi conflict
+    pip uninstall -y RPi.GPIO Jetson.GPIO
+    pip install RPi.GPIO
+
+    # Install the rest of the requirements
     pip install -r ~/AdaWriter/requirements.txt --no-input
 
     # Copy the service file and reload systemd to apply changes
