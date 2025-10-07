@@ -7,7 +7,7 @@
 echo "🔄 Syncing files to AdaWriter..."
 
 # Step 1: Sync files using your rsync command
-rsync -avz --delete \
+rsync -az --info=progress2 --delete --timeout=60 \
   --exclude 'projects/' \
   --exclude '*.pyc' \
   --exclude '__pycache__/' \
@@ -17,7 +17,7 @@ rsync -avz --delete \
   --exclude 'sim_output.png' \
   --exclude '.git/' \
   ~/Desktop/AdaWriter/ \
-  admin@10.0.0.31:~/
+  admin@10.0.0.31:~/AdaWriter/
 
 # Check if rsync was successful
 if [ $? -eq 0 ]; then
@@ -25,17 +25,16 @@ if [ $? -eq 0 ]; then
   echo "🚀 Restarting the AdaWriter service on the Pi..."
 
   # Step 2: SSH into the Pi and run the commands
-  ssh admin@10.0.0.31 << EOF
-    # Stop the service to release all resources (like the keyboard)
-    sudo systemctl stop adawriter.service
-
+  # The -T flag prevents the "Pseudo-terminal will not be allocated" warning.
+  # For passwordless deploys, run `ssh-copy-id admin@10.0.0.31` once on your machine.
+  ssh -T admin@10.0.0.31 << EOF
     # Ensure all Python dependencies are installed
     echo "Installing/updating Python packages..."
     source ~/AdaWriter/venv/bin/activate
     pip install -r ~/AdaWriter/requirements.txt --no-input
     
     # Restart the service with the new code
-    sudo systemctl start adawriter.service
+    sudo systemctl restart adawriter.service
     
     echo "Service restarted. Tailing logs for 10 seconds..."
     timeout 10 sudo journalctl -u adawriter.service -f --no-pager
