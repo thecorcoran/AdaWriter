@@ -31,7 +31,7 @@ echo "--> Updating package lists and installing system dependencies..."
 apt-get update
 # We install build tools and libraries, but NOT python3-pil.
 # Pillow will be installed correctly via pip in the virtual environment.
-apt-get install -y git python3-pip python3-numpy libxml2-dev libxslt1-dev python3-venv libopenjp2-7 build-essential python3-gpiozero
+apt-get install -y git python3-pip python3-numpy libxml2-dev libxslt1-dev python3-venv libopenjp2-7 build-essential python3-gpiozero python3-rpi.gpio
 
 # Step 2: Enable SPI interface
 echo "--> Enabling SPI interface via raspi-config non-interactively..."

@@ -10,4 +10,3 @@ python-docx # For creating .docx files from the web server
 
 # Note: The 'waveshare-epd' library is a hardware driver and must be installed separately from source.
 spidev      # For SPI bus communication with the e-paper display
-RPi.GPIO    # For controlling the e-paper display's command pins
