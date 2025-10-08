@@ -86,6 +86,11 @@ adduser ${TARGET_USER} spi
 adduser ${TARGET_USER} gpio
 adduser ${TARGET_USER} input
 
+# Step 8: Ensure SSH is enabled and running
+echo "--> Ensuring SSH service is enabled and running..."
+systemctl enable ssh
+systemctl restart ssh
+
 echo "--- ✅ AdaWriter Provisioning Complete! ---"
 echo "The AdaWriter service has been enabled and will start automatically on boot."
 echo "Rebooting now to apply all changes..."
