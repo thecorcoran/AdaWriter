@@ -8,9 +8,8 @@
 set -e # Exit immediately if a command exits with a non-zero status.
 
 # --- Configuration ---
-# The user that will own the AdaWriter directory and run the application.
-# It automatically detects the user who ran `sudo`. If not found, defaults to 'pi'.
-TARGET_USER="${SUDO_USER:-admin}"
+# The primary non-root user for the device. This user will own the project files.
+TARGET_USER="admin"
 
 # Define home and project directories based on the detected user.
 export TARGET_HOME="/home/${TARGET_USER}" # e.g., /home/admin

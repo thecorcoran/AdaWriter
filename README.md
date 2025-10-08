@@ -52,14 +52,14 @@ This method flashes the OS and runs the setup script automatically.
 4.  **Configure Settings**:
     *   **Set hostname**: e.g., `adawriter`.
     *   **Enable SSH**: Choose "Use password authentication".
-    *   **Set username and password**: Create a user (e.g., `pi` or `admin`). **Note:** The `provision.sh` script defaults to the user `pi`. If you choose a different username, you must edit the `TARGET_USER` variable in the script.
+    *   **Set username and password**: Set the username to `admin` and choose a secure password. This is required for the setup and deployment scripts to work correctly.
     *   **Configure wireless LAN**: Enter the SSID and password for your Wi-Fi network. This is crucial for the script to download dependencies.
     *   **Set locale settings**: Set your timezone and keyboard layout.
-    *   **Set username and password**: Create a user (e.g., `pi` or `admin`). The provisioning script will automatically detect this username.
-5.  **Enable First-Boot Script**:
-    *   Scroll to the bottom of the advanced settings.
-    *   Check the box for **"Run command"**.
-    *   Copy the entire contents of the `provision.sh` script from this repository and paste it into the text box.
+5.  **Configure First-Boot Service**:
+    *   Go to the **"Services"** tab within the advanced settings.
+    *   Check the box for **"Enable SSH"** (if not already done).
+    *   In the **"OS customisation"** section (or similar, depending on Imager version), find the option for boot command modifications. You need to add a kernel command line parameter.
+    *   Add the following line to the end of the `cmdline.txt` options: `systemd.run=/boot/first-boot.sh`
 6.  **Write the SD Card**: Click "SAVE", then "WRITE".
 7.  **Boot the Device**: Insert the SD card into your Raspberry Pi and power it on. The device will boot, connect to Wi-Fi, and automatically run the entire setup script. This process can take 5-10 minutes. The device will be ready to use after this.
 
