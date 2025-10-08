@@ -7,6 +7,10 @@
 
 set -e # Exit immediately if a command exits with a non-zero status.
 
+# Redirect all output (stdout and stderr) to a log file
+LOG_FILE="/var/log/adawriter-provisioning.log"
+exec &> >(tee -a "${LOG_FILE}")
+
 # --- Configuration ---
 # The primary non-root user for the device. This user will own the project files.
 TARGET_USER="admin"
