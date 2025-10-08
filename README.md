@@ -56,12 +56,13 @@ This method flashes the OS and runs the setup script automatically.
     *   **Configure wireless LAN**: Enter the SSID and password for your Wi-Fi network. This is crucial for the script to download dependencies.
     *   **Set locale settings**: Set your timezone and keyboard layout.
 5.  **Configure First-Boot Service**:
-    *   Go to the **"Services"** tab within the advanced settings.
-    *   Check the box for **"Enable SSH"** (if not already done).
-    *   In the **"OS customisation"** section (or similar, depending on Imager version), find the option for boot command modifications. You need to add a kernel command line parameter.
-    *   Add the following line to the end of the `cmdline.txt` options: `systemd.run=/boot/first-boot.sh`
-6.  **Write the SD Card**: Click "SAVE", then "WRITE".
-7.  **Boot the Device**: Insert the SD card into your Raspberry Pi and power it on. The device will boot, connect to Wi-Fi, and automatically run the entire setup script. This process can take 5-10 minutes. The device will be ready to use after this.
+    *   Click "SAVE", then "WRITE" to flash the OS to your SD card.
+6.  **Add the First-Boot Script**:
+    *   After writing is complete, **do not eject the SD card**. Your computer should automatically mount a partition from the card named `boot` or `bootfs`.
+    *   Open this `boot` partition.
+    *   Create a new file inside it named `firstrun.sh`.
+    *   Copy the entire contents of the `first-boot.sh` script from this repository and paste it into the new `firstrun.sh` file. Save and close the file.
+7.  **Boot the Device**: Safely eject the SD card from your computer, insert it into your Raspberry Pi, and power it on. The device will boot, connect to Wi-Fi, and automatically run the setup script. This process can take 5-10 minutes. The device will be ready to use after this.
 
 ### Manual Setup
 

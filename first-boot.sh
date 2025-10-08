@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # This script is designed to be run on the first boot of a Raspberry Pi.
+# Its contents should be copied into a file named `firstrun.sh` on the `/boot`
+# partition of the SD card after flashing the OS.
 # It downloads and executes the main provisioning script from the GitHub repository.
 
 set -e
