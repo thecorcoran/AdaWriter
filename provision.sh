@@ -47,32 +47,21 @@ git clone https://github.com/thecorcoran/AdaWriter.git "${PROJECT_DIR}"
 chown -R ${TARGET_USER}:${TARGET_USER} "${PROJECT_DIR}"
 echo "--> Repository cloned successfully."
 
-# Step 4: Set up Python virtual environment
-echo "--> Setting up Python virtual environment in ${PROJECT_DIR}..."
-sudo -u ${TARGET_USER} python3 -m venv "${PROJECT_DIR}/venv"
+# Step 4: Install Python dependencies globally
+echo "--> Installing Python dependencies globally..."
+pip3 install -r "${PROJECT_DIR}/requirements.txt" --no-input
 
-# Step 5: Install all Python dependencies into the virtual environment
-echo "--> Installing Python dependencies into the virtual environment..."
-sudo -u ${TARGET_USER} bash -c "
-    set -e
-    source \"${PROJECT_DIR}/venv/bin/activate\"
-    echo '--> Installing dependencies from requirements.txt...'
-    # Also add 'gpiozero' to your requirements.txt file for completeness
-    # pip install gpiozero
-    pip install -r \"${PROJECT_DIR}/requirements.txt\" --no-input
+echo '--> Cloning and installing Waveshare e-Paper driver...'
+# We clone manually to show git's progress, as the repo is large and pip hides the output.
+# --depth 1 creates a shallow clone, which is much faster.
+git clone --depth 1 https://github.com/waveshare/e-Paper.git "${TARGET_HOME}/e-Paper"
 
-    echo '--> Cloning Waveshare e-Paper driver (this may take a moment)...'
-    # We clone manually to show git's progress, as the repo is large and pip hides the output.
-    # --depth 1 creates a shallow clone, which is much faster.
-    git clone --depth 1 https://github.com/waveshare/e-Paper.git \"${TARGET_HOME}/e-Paper\"
+echo '--> Installing the cloned e-Paper driver...'
+pip3 install "${TARGET_HOME}/e-Paper/RaspberryPi_JetsonNano/python" --no-input
 
-    echo '--> Installing the cloned e-Paper driver...'
-    pip install \"${TARGET_HOME}/e-Paper/RaspberryPi_JetsonNano/python\" --no-input
-
-    # Clean up the cloned repository
-    rm -rf \"${TARGET_HOME}/e-Paper\"
-    echo '--> All Python dependencies installed.'
-"
+# Clean up the cloned repository
+rm -rf "${TARGET_HOME}/e-Paper"
+echo '--> All Python dependencies installed.'
 
 # Step 6: Install and enable the systemd service for auto-start
 echo "--> Installing and enabling systemd service for auto-start on boot..."
@@ -84,8 +73,8 @@ if [ ! -f "${SOURCE_SERVICE_FILE}" ]; then
     exit 1
 fi
 cp "${SOURCE_SERVICE_FILE}" "${SERVICE_FILE_PATH}"
-sed -i "s|/home/pi|${TARGET_HOME}|g" "${SERVICE_FILE_PATH}" # Make user home dir configurable
-sed -i "s/User=pi/User=${TARGET_USER}/" "${SERVICE_FILE_PATH}" # Set the correct user to run the service
+sed -i "s|/home/pi|${TARGET_HOME}|g" "${SERVICE_FILE_PATH}" # Set the correct home directory
+sed -i "s/User=pi/User=root/" "${SERVICE_FILE_PATH}" # Set the user to root for hardware access
 systemctl enable adawriter.service
 
 # Step 7: Add user to required hardware groups
