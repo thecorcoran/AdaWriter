@@ -57,11 +57,11 @@ This method flashes the OS and runs the setup script automatically.
     *   **Set locale settings**: Set your timezone and keyboard layout.
 5.  **Configure First-Boot Service**:
     *   Click "SAVE", then "WRITE" to flash the OS to your SD card.
-6.  **Add the First-Boot Script**:
+6.  **Add the Cloud-Init Script**:
     *   After writing is complete, **do not eject the SD card**. Your computer should automatically mount a partition from the card named `boot` or `bootfs`.
     *   Open this `boot` partition.
-    *   Create a new file inside it named `firstrun.sh`.
-    *   Copy the entire contents of the `first-boot.sh` script from this repository and paste it into the new `firstrun.sh` file. Save and close the file.
+    *   Create a new file inside it named `user-data`. **Note:** The file must not have an extension like `.txt`.
+    *   Copy the entire contents of the `first-boot.sh` script from this repository and paste it into the new `user-data` file. Save and close the file.
 7.  **Boot the Device**: Safely eject the SD card from your computer, insert it into your Raspberry Pi, and power it on. The device will boot, connect to Wi-Fi, and automatically run the setup script. This process can take 5-10 minutes. The device will be ready to use after this.
 
 ### Manual Setup
