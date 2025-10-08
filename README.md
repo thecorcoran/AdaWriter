@@ -47,7 +47,7 @@ The recommended way to set up a new AdaWriter device is to use the Raspberry Pi 
 This method flashes the OS and runs the setup script automatically.
 
 1.  **Download Raspberry Pi Imager**: Get the official imager from the [Raspberry Pi website](https://www.raspberrypi.com/software/).
-2.  **Choose OS**: Select "Raspberry Pi OS (other)" -> "Raspberry Pi OS Lite (Legacy, 64-bit)" based on Debian Bullseye.
+2.  **Choose OS**: Select "Raspberry Pi OS (other)" -> "Raspberry Pi OS Lite (64-bit)". This will be the latest version based on Debian Bookworm.
 3.  **Open Advanced Settings**: Before writing, click the gear icon ⚙️ to open the advanced settings.
 4.  **Configure Settings**:
     *   **Set hostname**: e.g., `adawriter`.
