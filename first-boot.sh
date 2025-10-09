@@ -17,7 +17,7 @@ write_files:
       echo "First boot: Network is up."
       # Download and execute the main provisioning script
       echo "First boot: Downloading and running provision.sh..."
-      wget -O /tmp/provision.sh https://raw.githubusercontent.com/thecorcoran/AdaWriter/main/provision.sh
+      wget -O /tmp/provision.sh https://raw.githubusercontent.com/thecorcoran/AdaWriter/adawriter-features-partial/provision.sh
       chmod +x /tmp/provision.sh
       /tmp/provision.sh
 
