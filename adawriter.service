@@ -10,7 +10,7 @@ WorkingDirectory=/home/admin/AdaWriter
 StandardOutput=journal
 StandardError=journal
 Restart=always
-User=root
+User=admin
 
 [Install]
 WantedBy=multi-user.target

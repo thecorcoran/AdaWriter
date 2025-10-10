@@ -13,7 +13,7 @@ exec &> >(tee -a "${LOG_FILE}")
 
 # --- Configuration ---
 # The primary non-root user for the device. This user will own the project files.
-TARGET_USER="admin"
+TARGET_USER="admin" # Explicitly set the user created in the Pi Imager.
 
 # Define home and project directories based on the detected user.
 export TARGET_HOME="/home/${TARGET_USER}" # e.g., /home/admin
@@ -77,7 +77,7 @@ if [ ! -f "${SOURCE_SERVICE_FILE}" ]; then
 fi
 cp "${SOURCE_SERVICE_FILE}" "${SERVICE_FILE_PATH}"
 sed -i "s|/home/pi|${TARGET_HOME}|g" "${SERVICE_FILE_PATH}" # Set the correct home directory
-sed -i "s/User=pi/User=root/" "${SERVICE_FILE_PATH}" # Set the user to root for hardware access
+sed -i "s/User=pi/User=${TARGET_USER}/" "${SERVICE_FILE_PATH}" # Set the correct user to run the service
 systemctl enable adawriter.service
 
 # Step 7: Add user to required hardware groups
