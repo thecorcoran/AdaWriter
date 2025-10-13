@@ -40,15 +40,16 @@ apt-get install -y git python3-pip python3-numpy libxml2-dev libxslt1-dev python
 echo "--> Enabling SPI interface via raspi-config non-interactively..."
 raspi-config nonint do_spi 0
 
-# Step 3: Clone the AdaWriter repository from GitHub
-echo "--> Cloning AdaWriter repository into ${PROJECT_DIR}..."
-# Remove the directory if it exists to ensure a fresh clone
+# Step 3: Copy the AdaWriter project from the boot partition
+echo "--> Copying AdaWriter project from /boot/AdaWriter into ${PROJECT_DIR}..."
+# Remove the directory if it exists to ensure a fresh copy
 if [ -d "${PROJECT_DIR}" ]; then
     rm -rf "${PROJECT_DIR}"
 fi
-git clone https://github.com/thecorcoran/AdaWriter.git "${PROJECT_DIR}"
+mkdir -p "${PROJECT_DIR}"
+cp -r /boot/AdaWriter/. "${PROJECT_DIR}/"
 chown -R ${TARGET_USER}:${TARGET_USER} "${PROJECT_DIR}"
-echo "--> Repository cloned successfully."
+echo "--> Project copied successfully."
 
 # Step 4: Install Python dependencies globally
 echo "--> Installing Python dependencies globally..."

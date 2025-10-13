@@ -15,9 +15,9 @@ write_files:
           sleep 2
       done
       echo "First boot: Network is up."
-      # Download and execute the main provisioning script
-      echo "First boot: Downloading and running provision.sh..."
-      wget -O /tmp/provision.sh https://raw.githubusercontent.com/thecorcoran/AdaWriter/main/provision.sh
+      # Copy and execute the main provisioning script from the boot partition
+      echo "First boot: Copying and running provision.sh from /boot..."
+      cp /boot/provision.sh /tmp/provision.sh
       chmod +x /tmp/provision.sh
       /tmp/provision.sh
 
