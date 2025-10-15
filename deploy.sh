@@ -30,7 +30,7 @@ if [ $? -eq 0 ]; then
   ssh -T admin@10.0.0.31 << EOF
     # Ensure all Python dependencies are installed
     echo "Installing/updating Python packages..."
-    sudo pip3 install -r ~/AdaWriter/requirements.txt --no-input
+    sudo -u admin /home/admin/AdaWriter/venv/bin/pip install -r /home/admin/AdaWriter/requirements.txt --no-input
 
     # Copy the service file and reload systemd to apply changes
     sudo cp ~/AdaWriter/adawriter.service /etc/systemd/system/adawriter.service

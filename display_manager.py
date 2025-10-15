@@ -9,8 +9,12 @@ from PIL import Image, ImageDraw, ImageFont
 # This try/except block is important for allowing the code to run
 # on a computer for testing, even without the hardware libraries.
 try:
+    import waveshare_epd
+    logging.info(f"Successfully imported waveshare_epd package. Contents: {dir(waveshare_epd)}")
     from waveshare_epd import epd4in2_V2
-except ImportError:
+    logging.info("Successfully imported epd4in2_V2 submodule.")
+except ImportError as e:
+    logging.error(f"Failed to import a waveshare submodule: {e}")
     epd4in2_V2 = None
 
 import config
