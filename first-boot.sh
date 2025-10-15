@@ -16,8 +16,8 @@ write_files:
       done
       echo "First boot: Network is up."
       # Copy and execute the main provisioning script from the boot partition
-      echo "First boot: Copying and running provision.sh from /boot..."
-      cp /boot/provision.sh /tmp/provision.sh
+      echo "First boot: Copying and running provision.sh from /boot/AdaWriter..."
+      cp /boot/AdaWriter/provision.sh /tmp/provision.sh
       chmod +x /tmp/provision.sh
       /tmp/provision.sh
 
