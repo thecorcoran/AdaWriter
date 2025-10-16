@@ -63,6 +63,11 @@ git clone --depth 1 https://github.com/waveshare/e-Paper.git "${TARGET_HOME}/e-P
 "${PROJECT_DIR}/venv/bin/pip" install "${TARGET_HOME}/e-Paper/RaspberryPi_JetsonNano/python" --no-input
 rm -rf "${TARGET_HOME}/e-Paper"
 
+echo '--> Surgically removing conflicting Jetson.GPIO library...'
+SITE_PACKAGES=$(find "${PROJECT_DIR}/venv/lib/" -type d -name "site-packages")
+rm -rf "${SITE_PACKAGES}/Jetson"
+find "${SITE_PACKAGES}" -maxdepth 1 -type d -name 'Jetson.GPIO-*' -exec rm -rf {} +
+
 echo "--> Creating and enabling systemd service for auto-start..."
 SERVICE_FILE_PATH="/etc/systemd/system/adawriter.service"
 cat > "${SERVICE_FILE_PATH}" << EOF
