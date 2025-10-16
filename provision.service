@@ -1,0 +1,13 @@
+[Unit]
+Description=AdaWriter First-Boot Provisioning
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/boot/firmware/AdaWriter/provision.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
