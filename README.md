@@ -44,6 +44,9 @@ The recommended way to set up a new AdaWriter device is to use the Raspberry Pi 
 
 ### Fully Automated Setup (Recommended)
 
+> [!WARNING]  
+> This automated process is currently not functional and has bugs. Please use the **Manual Setup** instructions below.
+
 This method flashes the OS and runs the setup script automatically.
 
 1.  **Download Raspberry Pi Imager**: Get the official imager from the [Raspberry Pi website](https://www.raspberrypi.com/software/).

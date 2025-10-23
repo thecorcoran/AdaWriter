@@ -41,12 +41,7 @@ done
 echo "--> Enabling SPI interface..."
 raspi-config nonint do_spi 0
 
-echo "--> Copying AdaWriter project from /boot/firmware/AdaWriter..."
-if [ -d "${PROJECT_DIR}" ]; then
-    rm -rf "${PROJECT_DIR}"
-fi
-mkdir -p "${PROJECT_DIR}"
-cp -r /boot/firmware/AdaWriter/. "${PROJECT_DIR}/"
+echo "--> Ensuring correct ownership of project directory..."
 chown -R ${TARGET_USER}:${TARGET_USER} "${PROJECT_DIR}"
 
 echo "--> Pausing for 15 seconds to ensure network services are stable..."
@@ -95,6 +90,12 @@ adduser ${TARGET_USER} gpio
 adduser ${TARGET_USER} input
 
 echo "Disabling one-time provisioning service..."
+systemctl disable provision.service
+
+echo "--- ✅ AdaWriter Provisioning Complete! ---"
+echo "Rebooting now to start the AdaWriter service..."
+reboot
+oning service..."
 systemctl disable provision.service
 
 echo "--- ✅ AdaWriter Provisioning Complete! ---"
