@@ -37,6 +37,22 @@ until apt-get install -y git python3-pip python3-numpy libxml2-dev libxslt1-dev 
 done
 # --- End of Installation ---
 
+echo "--> Installing I2C tools..."
+apt-get install -y i2c-tools
+
+echo "--> Enabling I2C interface..."
+raspi-config nonint do_i2c 0
+
+echo "--> Configuring DS3231 Real-Time Clock (RTC)..."
+# Add the RTC device tree overlay if it's not already there
+if ! grep -q "dtoverlay=i2c-rtc,ds3231" /boot/firmware/config.txt; then
+    echo "dtoverlay=i2c-rtc,ds3231" >> /boot/firmware/config.txt
+fi
+
+echo "--> Removing fake hardware clock to enable RTC..."
+apt-get -y remove fake-hwclock
+update-rc.d -f fake-hwclock remove
+
 
 echo "--> Enabling SPI interface..."
 raspi-config nonint do_spi 0

@@ -21,12 +21,14 @@ AdaWriter is a minimalist, distraction-free writing device powered by a Raspberr
         *   Upload `.txt` and `.docx` files from your computer to the device.
         *   Edit files directly in the browser.
         *   Archive, delete, and restore files from a trash folder.
+*   **Real-Time Clock (RTC)**: Keeps accurate time for journal timestamps, even when offline for extended periods.
 *   **Portable and Low-Power**: Designed to be used anywhere.
 
 ## Hardware Requirements
 
 *   Raspberry Pi (tested with Raspberry Pi Zero and similar models).
 *   Waveshare 4.2" E-Paper Display (V2).
+*   DS3231 Real-Time Clock (RTC) Module.
 *   An external USB keyboard.
 *   A power source (e.g., a power bank).
 *   An SD card for the OS and project files.
