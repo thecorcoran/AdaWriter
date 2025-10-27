@@ -46,15 +46,22 @@ def scan_for_networks():
 def connect_to_network(ssid, password):
     """Connects to a specified Wi-Fi network using nmcli."""
     print(f"DEBUG: Attempting to connect to '{ssid}'...")
-    
+
+    # First, try to delete any existing connection with the same name.
+    # This prevents issues with stale credentials from a previous setup.
+    _run_system_command(['sudo', 'nmcli', 'con', 'delete', ssid], check=False, timeout=10)
+    time.sleep(1) # Give nmcli a moment to process the deletion.
+
     _run_system_command(['sudo', 'nmcli', 'dev', 'disconnect', 'wlan0'], check=False, timeout=5)
     time.sleep(2)
     
-    command = ['sudo', 'nmcli', 'dev', 'wifi', 'connect', ssid]
+    # Explicitly create a new connection profile to avoid conflicts with stale profiles.
+    # Using 'name' and 'ifname' ensures a fresh profile is made.
+    command = ['sudo', 'nmcli', 'dev', 'wifi', 'connect', ssid, 'name', ssid, 'ifname', 'wlan0']
     if password:
         command.extend(['password', password])
 
-    success, output = _run_system_command(command, timeout=30)
+    success, output = _run_system_command(command, timeout=60)
     
     if success and "successfully activated" in output:
         msg = f"Successfully connected to '{ssid}'!"

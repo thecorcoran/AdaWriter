@@ -471,12 +471,12 @@ class AdaWriter:
                     self.last_activity = time.time()
                     code = event.code
 
+                    # Handle shift press and release events separately
                     if code in (ecodes.KEY_LEFTSHIFT, ecodes.KEY_RIGHTSHIFT):
-                        self.keyboard.shift_pressed = (event.value != 0)
-                        continue
-                    
-                    if event.value != 1: continue # Only handle key presses
+                        self.keyboard.shift_pressed = (event.value != 0) # 1 for press, 0 for release
+                        continue # Don't process further, just update shift state
 
+                    if event.value != 1: continue # Only handle key-down for other keys
                     if code == ecodes.KEY_ENTER: return text
                     elif code == ecodes.KEY_ESC: return None
                     elif code == ecodes.KEY_BACKSPACE:
