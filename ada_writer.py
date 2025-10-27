@@ -172,10 +172,10 @@ class AdaWriter:
         choice = self.wait_for_direct_choice([ecodes.KEY_1, ecodes.KEY_2])
         return choice == ecodes.KEY_1
 
-    def wait_for_direct_choice(self, valid_key_codes):
+    def wait_for_direct_choice(self, valid_key_codes, timeout_enabled=True):
         """Waits for a specific key press from a list of valid keys."""
         while not SHUTDOWN_REQUESTED:
-            if time.time() - self.last_activity > config.INACTIVITY_TIMEOUT_SECONDS:
+            if timeout_enabled and time.time() - self.last_activity > config.INACTIVITY_TIMEOUT_SECONDS:
                 logger.info("Inactivity timeout in wait_for_direct_choice.")
                 return ecodes.KEY_Q
 
@@ -425,7 +425,7 @@ class AdaWriter:
             self.display._draw_wrapped_text(130, "Could not get IP address. Check Wi-Fi connection.", self.display.fonts['body'], config.TEXT_MARGIN, centered=True)
         self.display._draw_text_centered(draw, self.display.height - 25, "ESC to Return", self.display.fonts['footer'])
         self.display.display_image(is_full_refresh=True)
-        self.wait_for_direct_choice([ecodes.KEY_ESC])
+        self.wait_for_direct_choice([ecodes.KEY_ESC], timeout_enabled=False)
 
     def _text_input_loop(self, prompt, initial_text="", is_password=False):
         """A robust UI loop for getting a line of text from the user."""

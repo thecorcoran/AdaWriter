@@ -121,13 +121,18 @@ def create_web_app(projects_dir, archive_dir, trash_dir):
             </details>
 
             <h2>Projects</h2>
-            <ul class="file-list">
-                {% for file in files.projects %}
-                    {{ file_item(file, docx_enabled) }}
-                {% else %}
-                    <li>No project files found.</li>
-                {% endfor %}
-            </ul>
+            <details>
+                <summary>All Projects</summary>
+                <div class="details-content">
+                    <ul class="file-list">
+                        {% for file in files.projects %}
+                            {{ file_item(file, docx_enabled) }}
+                        {% else %}
+                            <li>No project files found.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </details>
 
             <div class="upload-form">
                 <h2>Upload New File</h2>
@@ -288,10 +293,38 @@ def create_web_app(projects_dir, archive_dir, trash_dir):
         if file.filename == '':
             flash('No selected file.', 'error')
             return redirect(url_for('index'))
+
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['PROJECTS_DIR'], filename))
-            flash(f"'{filename}' uploaded successfully.", 'success')
+            
+            if filename.lower().endswith('.docx'):
+                if Document is None:
+                    flash('DOCX processing library not available.', 'error')
+                    return redirect(url_for('index'))
+                try:
+                    document = Document(file)
+                    text_content = "\n".join([p.text for p in document.paragraphs])
+                    
+                    base_filename = os.path.splitext(filename)[0]
+                    txt_filename = f"{base_filename}.txt"
+                    
+                    # Prevent overwriting existing files
+                    counter = 1
+                    final_txt_filename = txt_filename
+                    while os.path.exists(os.path.join(app.config['PROJECTS_DIR'], final_txt_filename)):
+                        final_txt_filename = f"{base_filename}_{counter}.txt"
+                        counter += 1
+                    
+                    with open(os.path.join(app.config['PROJECTS_DIR'], final_txt_filename), 'w', encoding='utf-8') as f:
+                        f.write(text_content)
+                    flash(f"'{filename}' uploaded and converted to '{final_txt_filename}'.", 'success')
+                except Exception as e:
+                    app.logger.error(f"Error processing .docx file {filename}: {e}", exc_info=True)
+                    flash('Could not process the .docx file.', 'error')
+
+            elif filename.lower().endswith('.txt'):
+                file.save(os.path.join(app.config['PROJECTS_DIR'], filename))
+                flash(f"'{filename}' uploaded successfully.", 'success')
         else:
             flash('Invalid file type. Only .txt and .docx files are allowed.', 'error')
         return redirect(url_for('index'))
