@@ -1,112 +1,112 @@
 # AdaWriter
 
-AdaWriter is a minimalist, distraction-free writing device powered by a Raspberry Pi and an e-paper display. It's designed for writers who want to focus on their craft without the interruptions of a modern computer.
+AdaWriter is a minimalist, distraction-free writing device powered by a Raspberry Pi and an e-paper display. It is designed for writers who want to focus on their craft without the interruptions of a modern computer. Its philosophy is rooted in simplicity, providing just the tools you need to write and nothing more.
 
 ![AdaWriter Screenshot](sim_output.png)
 
-## Features
+## Core Features
 
-*   **Distraction-Free E-Paper Display**: Easy on the eyes, with a simple, clean interface.
-*   **Full-Fledged Text Editor**:
-    *   WYSIWYG cursor navigation that respects word wrapping.
-    *   Character, word, and line manipulation (Enter, Backspace).
-    *   Auto-saving and manual saving on exit.
-*   **File Management**:
-    *   **Daily Journal**: A one-press option to open a timestamped journal entry for the current day.
-    *   **Project Browser**: A scrollable list to manage and edit multiple project files.
-*   **Wi-Fi Connectivity**:
-    *   Connect to new Wi-Fi networks directly from the device.
-    *   **Web Interface**: Access a full-featured web server from another computer on the same network to:
-        *   Download project files as `.txt` or `.docx`.
-        *   Upload `.txt` and `.docx` files from your computer to the device.
-        *   Edit files directly in the browser.
-        *   Archive, delete, and restore files from a trash folder.
-*   **Real-Time Clock (RTC)**: Keeps accurate time for journal timestamps, even when offline for extended periods.
-*   **Portable and Low-Power**: Designed to be used anywhere.
+### Distraction-Free Writing
+*   **E-Paper Display**: A beautiful, paper-like 4.2" display that is easy on the eyes and free of distracting backlight.
+*   **Minimalist Editor**: The writing screen shows only your text and a subtle cursor. Status information like word count or the time appears only when requested and fades away automatically.
+*   **Focused Workflow**: The device boots directly into a simple menu, guiding you straight into your writing. There is no web browser, no notifications, and no other apps to pull you out of your flow.
+
+### Simple & Powerful Text Editing
+*   **Robust Text Editor**: A full-featured plain text editor that supports seamless cursor navigation across word-wrapped lines.
+*   **Automatic Saving**: Your work is saved automatically after a few seconds of inactivity and again when you exit the editor, so you never have to worry about losing your progress.
+*   **Daily Journal**: A dedicated "Daily Journal" mode that automatically opens or creates an entry for the current day, timestamped and ready for your thoughts.
+*   **Project Management**: Keep your writing organized with a simple, scrollable list of project files. You can create, rename, and delete projects directly on the device.
+
+### Easy File Management via Web Interface
+*   **Built-in Web Server**: Activate the Wi-Fi and start a web server directly from the device menu.
+*   **Access From Any Device**: Connect to the AdaWriter from any computer or phone on the same Wi-Fi network to easily manage your files.
+*   **Upload and Download**:
+    *   Download your project files as `.txt` or convert them to `.docx` on the fly.
+    *   Upload `.txt` files directly or upload `.docx` files, which are automatically converted to plain text for editing.
+*   **Full File Control**: The web interface allows you to edit files, archive old projects, and move files to or restore them from a trash folder.
 
 ## Hardware Requirements
 
-*   Raspberry Pi (tested with Raspberry Pi Zero and similar models).
-*   Waveshare 4.2" E-Paper Display (V2).
-*   DS3231 Real-Time Clock (RTC) Module.
-*   An external USB keyboard.
-*   A power source (e.g., a power bank).
-*   An SD card for the OS and project files.
+*   **Raspberry Pi**: Tested with Raspberry Pi Zero W/WH and similar models.
+*   **E-Paper Display**: Waveshare 4.2" E-Paper Display (V2).
+*   **Real-Time Clock**: DS3231 RTC Module (for accurate offline timekeeping).
+*   **Input**: A standard external USB keyboard.
+*   **Power**: A USB power source, such as a power bank or wall adapter.
+*   **Storage**: A microSD card (8GB or larger recommended).
 
-## Keyboard Layout
+## Software & Dependencies
 
-The keyboard layout is defined in `us_qwerty.json`. This file maps the `evdev` key codes from a standard US QWERTY keyboard to their corresponding characters, including shifted values.
+The application is built with Python and relies on the following key libraries:
 
-If you are using a different keyboard layout, you can create a new JSON file and modify the `Keyboard` class in `keyboard.py` to load it.
+*   `pygame`: For the main application loop and event handling.
+*   `evdev`: For low-level keyboard input.
+*   `Pillow`: For drawing text and shapes on the display.
+*   `Flask`: To power the web interface.
+*   `python-docx`: For handling `.docx` file conversions.
+*   `netifaces`: To detect the device's IP address.
 
+The hardware drivers (`waveshare-epd`, `spidev`, `RPi.GPIO`) are also required and are installed by the provisioning script.
 
 ## Setup and Installation
 
-The recommended way to set up a new AdaWriter device is to use the Raspberry Pi Imager to create a pre-configured SD card that runs the provisioning script on its first boot.
+> [!WARNING]
+> The fully automated setup method (`first-boot.sh`) is currently experimental and may have bugs. The manual setup is the recommended and most reliable method.
 
-### Fully Automated Setup (Recommended)
+### Manual Setup (Recommended)
 
-> [!WARNING]  
-> This automated process is currently not functional and has bugs. Please use the **Manual Setup** instructions below.
-
-This method flashes the OS and runs the setup script automatically.
-
-1.  **Download Raspberry Pi Imager**: Get the official imager from the [Raspberry Pi website](https://www.raspberrypi.com/software/).
-2.  **Choose OS**: Select "Raspberry Pi OS (other)" -> "Raspberry Pi OS Lite (64-bit)". This will be the latest version based on Debian Bookworm.
-3.  **Open Advanced Settings**: Before writing, click the gear icon ⚙️ to open the advanced settings.
-4.  **Configure Settings**:
-    *   **Set hostname**: e.g., `adawriter`.
-    *   **Enable SSH**: Choose "Use password authentication".
-    *   **Set username and password**: Set the username to `admin` and choose a secure password. This is required for the setup and deployment scripts to work correctly.
-    *   **Configure wireless LAN**: Enter the SSID and password for your Wi-Fi network. This is crucial for the script to download dependencies.
-    *   **Set locale settings**: Set your timezone and keyboard layout.
-5.  **Configure First-Boot Service**:
-    *   Click "SAVE", then "WRITE" to flash the OS to your SD card.
-6.  **Add the Cloud-Init Script**:
-    *   After writing is complete, **do not eject the SD card**. Your computer should automatically mount a partition from the card named `boot` or `bootfs`.
-    *   Open this `boot` partition.
-    *   Create a new file inside it named `user-data`. **Note:** The file must not have an extension like `.txt`.
-    *   Copy the entire contents of the `first-boot.sh` script from this repository and paste it into the new `user-data` file. Save and close the file.
-7.  **Boot the Device**: Safely eject the SD card from your computer, insert it into your Raspberry Pi, and power it on. The device will boot, connect to Wi-Fi, and automatically run the setup script. This process can take 5-10 minutes. The device will be ready to use after this.
-
-### Manual Setup
-
-If you already have a running Raspberry Pi, you can run the provisioning script manually.
-
-1.  **Boot and Connect**: Ensure your Raspberry Pi is running and connected to the internet.
-2.  **Clone Repository**:
+1.  **Flash OS**: Flash a new microSD card with **Raspberry Pi OS Lite (64-bit)** using the official Raspberry Pi Imager. Use the advanced settings (⚙️) to pre-configure your username, password, and Wi-Fi credentials.
+2.  **Boot and Connect**: Insert the card into your Pi, power it on, and connect to it via SSH.
+3.  **Clone Repository**:
     ```bash
     git clone https://github.com/thecorcoran/AdaWriter.git
     cd AdaWriter
     ```
-3.  **Run Provisioning Script**: Make the script executable and run it with `sudo`.
+4.  **Run Provisioning Script**: Make the script executable and run it. This will install all dependencies, configure the system, and set up the application to run automatically on boot.
     ```bash
     chmod +x provision.sh
     sudo ./provision.sh
     ```
-The script will set up all dependencies and enable the application to start automatically on boot.
+After the script completes and the device reboots, the AdaWriter application will start automatically.
 
-## Running the Application
+## How to Use
 
-If you used the provisioning script, the AdaWriter application will start automatically when the device boots.
+### On the Device
+The device is controlled with a USB keyboard.
 
-### Manual Control (for Development)
+*   **Main Menu**:
+    *   `1`: Open today's Daily Journal entry.
+    *   `2`: View and manage your list of projects.
+    *   `W`: Open the Wi-Fi & Network menu.
+    *   `Q`: Shut down the device.
+*   **Editor**:
+    *   `Arrow Keys`: Move the cursor.
+    *   `Enter`: Create a new line.
+    *   `Backspace`: Delete characters.
+    *   `F1`: Briefly display the current word count.
+    *   `F2`: Briefly display the current time.
+    *   `ESC`: Save your work and return to the previous menu.
 
-You can manually control the `adawriter` service using `systemctl`. This is useful for development or debugging.
+### Using the Web Interface
+1.  On the AdaWriter, navigate to **W for Wi-Fi** -> **1. Start Web Server**.
+2.  The device will display its IP address (e.g., `http://192.168.1.100:8000`).
+3.  Open that address in a web browser on another device on the same network.
+4.  From here, you can download, upload, edit, and manage all your project files.
 
-```bash
-# Stop the service
-sudo systemctl stop adawriter.service
+## Configuration & Development
 
-# Start the service
-sudo systemctl start adawriter.service
+### Application Configuration
+You can modify the application's behavior by editing `config.py`:
+*   `INACTIVITY_TIMEOUT_SECONDS`: Set how long the device waits before automatically shutting down (default: 10 minutes).
+*   `AUTO_SAVE_INTERVAL`: Set the timing for automatic saves while writing.
+*   `KEYBOARD_LAYOUT_FILE`: Change the keyboard mapping file (default: `us_qwerty.json`).
 
-# View the application's log output
-sudo journalctl -u adawriter.service -f
+### Development
+The `deploy.sh` script provides a convenient way to sync your local code changes to the AdaWriter device and restart the application.
 
-# Disable auto-start on boot
-sudo systemctl disable adawriter.service
-
-# Re-enable auto-start on boot
-sudo systemctl enable adawriter.service
-```
+1.  Update the IP address and username in `deploy.sh` to match your device.
+2.  For passwordless deploys, copy your SSH key to the device: `ssh-copy-id your_user@your_pi_ip`.
+3.  Run the script from your development machine:
+    ```bash
+    ./deploy.sh
+    ```
+This will rsync the files, reinstall dependencies, and restart the `adawriter` service. You can monitor the application logs with `sudo journalctl -u adawriter.service -f`.
