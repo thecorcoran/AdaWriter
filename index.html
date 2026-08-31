@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdaWriter — Distraction-Free E-Ink Writing Device</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="hero">
+    <div class="container">
+      <div class="badge">Hardware &amp; Software Project</div>
+      <h1 class="project-title">AdaWriter</h1>
+      <p class="tagline">A dedicated, distraction-free writing appliance built on Raspberry Pi and E-Paper.</p>
+      <div class="hero-actions">
+        <a href="#quickstart" class="btn btn-primary">Quick Start Guide</a>
+        <a href="#hardware" class="btn btn-secondary">Hardware Specs</a>
+        <a href="https://github.com/thecorcoran/AdaWriter" class="btn btn-outline" target="_blank" rel="noopener">GitHub Repo</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    
+    <!-- Overview Section -->
+    <section class="section" id="overview">
+      <h2 class="section-title">Overview</h2>
+      <div class="card card-accent">
+        <p><strong>AdaWriter</strong> transforms a Raspberry Pi Zero 2 W and a Waveshare 4.2-inch e-paper display into a quiet, dedicated digital typewriter. Designed to foster deep contemplative writing and journaling without browser tabs, notifications, or battery anxiety.</p>
+      </div>
+    </section>
+
+    <!-- Key Features Grid -->
+    <section class="section" id="features">
+      <h2 class="section-title">Key Features</h2>
+      <div class="grid grid-3">
+        <div class="feature-card">
+          <div class="icon">📜</div>
+          <h3>Distraction-Free E-Ink</h3>
+          <p>Crisp typography with full refreshes on menu transitions and rapid partial refreshes while typing for low-latency response.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📅</div>
+          <h3>Automated Journaling</h3>
+          <p>Daily auto-created journal entries stamped with timestamps and automatically compiled into cumulative monthly archives.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📁</div>
+          <h3>Multi-Project Workspaces</h3>
+          <p>Dedicated slots for major project drafts with built-in renaming, archiving, and deletion safeguards.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📶</div>
+          <h3>Wi-Fi File Transfer</h3>
+          <p>Built-in lightweight HTTP server allows browsing and downloading documents (.txt and .doc/RTF) over local Wi-Fi.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">⌨️</div>
+          <h3>Auto Keyboard Detection</h3>
+          <p>Direct low-level <code>evdev</code> input handling that automatically binds to any connected USB keyboard.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">⚡</div>
+          <h3>Safe Power Management</h3>
+          <p>Inactivity shutdown timer and graceful power-off sequence featuring custom art and literary quotes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hardware Section -->
+    <section class="section" id="hardware">
+      <h2 class="section-title">Hardware Bill of Materials</h2>
+      <div class="card">
+        <table class="specs-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Specification</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Single-Board Computer</strong></td>
+              <td>Raspberry Pi Zero 2 W (or Pi 3/4)</td>
+              <td>Low power, built-in Wi-Fi &amp; Bluetooth</td>
+            </tr>
+            <tr>
+              <td><strong>E-Ink Display</strong></td>
+              <td>Waveshare 4.2" E-Paper Module (B&amp;W V2)</td>
+              <td>SPI Interface, 400x300 resolution</td>
+            </tr>
+            <tr>
+              <td><strong>Keyboard</strong></td>
+              <td>Standard USB / Mechanical Keyboard</td>
+              <td>Plug &amp; play USB HID detection</td>
+            </tr>
+            <tr>
+              <td><strong>Storage</strong></td>
+              <td>MicroSD Card (8 GB+)</td>
+              <td>Raspberry Pi OS Lite (32-bit/64-bit)</td>
+            </tr>
+            <tr>
+              <td><strong>Power Supply</strong></td>
+              <td>5V / 2.5A Micro-USB / USB-C</td>
+              <td>Compatible with standard battery packs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Quickstart & Software Setup -->
+    <section class="section" id="quickstart">
+      <h2 class="section-title">Software &amp; Setup</h2>
+      
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Enable SPI on Raspberry Pi OS</h3>
+          <p>Run <code>sudo raspi-config</code>, navigate to <strong>Interface Options &rarr; SPI</strong>, and select <strong>Yes</strong>.</p>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Install System Dependencies</h3>
+          <pre><code>sudo apt update &amp;&amp; sudo apt install -y python3-pip python3-venv git network-manager fonts-pt-serif fonts-dejavu-core</code></pre>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Install Python Libraries</h3>
+          <pre><code>pip install pygame evdev Pillow netifaces waveshare-epd</code></pre>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Run as Appliance Service</h3>
+          <p>Configure systemd to launch AdaWriter on boot:</p>
+          <pre><code>sudo systemctl enable adawriter.service
+sudo systemctl start adawriter.service</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation & Hotkeys -->
+    <section class="section" id="hotkeys">
+      <h2 class="section-title">Shortcuts &amp; Controls</h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3>Main Menu</h3>
+          <ul class="key-list">
+            <li><kbd>1</kbd> <span>Daily Journal</span></li>
+            <li><kbd>2</kbd> <span>Project Files (1&ndash;3)</span></li>
+            <li><kbd>3</kbd> <span>Wi-Fi Network Configuration</span></li>
+            <li><kbd>W</kbd> <span>Start Wi-Fi Web Transfer Server</span></li>
+            <li><kbd>Q</kbd> <span>Safe System Shutdown</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>In-Editor Shortcuts</h3>
+          <ul class="key-list">
+            <li><kbd>F1</kbd> <span>Display Word Count &amp; Clock</span></li>
+            <li><kbd>PgUp</kbd> / <kbd>PgDn</kbd> <span>Scroll Document</span></li>
+            <li><kbd>ESC</kbd> <span>Save and Return to Menu</span></li>
+            <li><kbd>Ctrl</kbd> + <kbd>S</kbd> <span>Instant Manual Save</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>AdaWriter &bull; Distraction-Free E-Ink Writing System</p>
+      <p class="subtext">Open-source documentation &bull; Built with Python, Pygame, and Waveshare EPD</p>
+    </div>
+  </footer>
+
+</body>
+</html>
